@@ -1,20 +1,22 @@
 package com.taodian.monitor.spout;
 
+import java.io.File;
+
 import com.taodian.monitor.storm.DataCell;
 import com.taodian.monitor.storm.DataSpout;
 import com.taodian.monitor.storm.TopologyContext;
 
-public class HTTPURLSpout implements DataSpout {
+public class FileDataSpout implements DataSpout {
 	
-	public HTTPURLSpout(){
-		
+	public void load(File f){
 	}
 	
-	public boolean connect(String url){
-		
-		return false;
+	@Override
+	public void prepare(TopologyContext context) {
+		// TODO Auto-generated method stub
+
 	}
-	
+
 	@Override
 	public DataCell nextDataCell() {
 		// TODO Auto-generated method stub
@@ -22,17 +24,10 @@ public class HTTPURLSpout implements DataSpout {
 	}
 
 	@Override
-	public void prepare(TopologyContext context) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
 	public boolean isClosed() {
 		// TODO Auto-generated method stub
 		return false;
 	}
-
 
 
 

@@ -22,7 +22,8 @@ ClickMonitor
 *  taodian.api_route -- API路由地址，默认：http://api.zaol.cn/api/route
 *  log_level -- (debug,info,warn) 默认info
 *  max_log_days -- 日志最多保留多少天，默认10.
-
+*  core_worker_size -- 消息处理线程数量。
+*  click_gate_url -- 配置实时日志流来源，例如: http://c.zaol.cn/log/?token=test&id=1
 
 使用方式
 =======

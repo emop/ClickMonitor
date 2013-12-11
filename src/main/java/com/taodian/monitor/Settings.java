@@ -22,15 +22,17 @@ public class Settings {
 	public static final String TAODIAN_APPROUTE = "taodian.api_route";
 	
 	public static final String WRITE_LOG_QUEUE_SIZE = "write_log_queue_size";
-	public static final String WRITE_LOG_THREAD_COUNT = "write_log_thread_count";
-	public static final String GET_SHORT_URL_THREAD_COUNT = "get_short_url_thread_count";
-
+	public static final String CORE_WORKER_SIZE = "core_worker_size";
+	//public static final String GET_SHORT_URL_THREAD_COUNT = "get_short_url_thread_count";
 	
-	public static final String WRITE_ACCESS_LOG = "write_access_log";
-
-	public static final String TAOKE_SOURCE_DOMAIN = "taoke_source_domain";
-
-	public static final String CACHE_URL_TIMEOUT = "cache_url_timeout";
+	public static final String TOPOLOGY = "topology";
+	
+	/**
+	 * 消息处理结构的，输入流。
+	 */
+	public static final String INPUT_SPOUT = "click_gate";
+	
+	public static final String CLICK_GATE_LOG_URL = "click_gate_url";
 
 	
 	private static Log log = LogFactory.getLog("click.settings");

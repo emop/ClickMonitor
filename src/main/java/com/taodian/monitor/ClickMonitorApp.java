@@ -62,6 +62,10 @@ public class ClickMonitorApp {
 		
 		ClickMonitor cm = ClickMonitor.getInstance();
 		
+		if(cmd.hasOption(INPUTFILE)){
+			cm.setInputFile(cmd.getOptionValue(INPUTFILE));
+		}
+		
 		cm.start();		
 		if(cm.isCommandLineMode()){
 			cm.waitAllSpoutDone();

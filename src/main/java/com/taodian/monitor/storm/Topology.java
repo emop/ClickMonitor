@@ -17,6 +17,12 @@ public interface Topology {
 	 * 
 	 * @param name 数据来源
 	 * @param bolt，
+	 * @param output -- 输出的消息队列。
 	 */
-	public void setBolt(String from, DataBolt bolt);
+	public void setBolt(String from, DataBolt bolt, String output);
+	
+	/**
+	 * 开始运行
+	 */
+	public void start();
 }

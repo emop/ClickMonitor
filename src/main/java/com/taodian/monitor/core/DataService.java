@@ -13,8 +13,10 @@ import com.taodian.monitor.model.ShortUrlModel;
 public class DataService {
 	private Jedis jredis = null; //new JRedisClient(
 	
-	public void start(){
+	public boolean start(){
 		jredis = new Jedis(Settings.getString("redis.host", "127.0.0.1"));
+		
+		return true;
 	}
 	
 	public ShortUrlModel getShortUrl(String key){

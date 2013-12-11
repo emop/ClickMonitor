@@ -10,4 +10,5 @@ public interface DataSpout {
 	public void prepare(TopologyContext context);
 	public DataCell nextDataCell();
 	
+	public boolean isClosed();
 }
