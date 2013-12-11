@@ -11,6 +11,29 @@ ClickMonitor
 *  Bolt  -- 也是Storm里面的概念，处理从Spout 读到的数据。
 *  Redies -- 数据存储层。
 
+参数配置
+=======
+
+应用中的参数都是通过java的Property配置。 例如: java -Dtaodian.app_key=1, 支持的参数有：
+
+*  http_port -- HTTP服务的端口号，默认：8082
+*  taodian.api_id -- 淘点开放平台的，APP ID
+*  taodian.api_secret -- 淘点开放平台的，APP SECRET
+*  taodian.api_route -- API路由地址，默认：http://api.zaol.cn/api/route
+*  log_level -- (debug,info,warn) 默认info
+*  max_log_days -- 日志最多保留多少天，默认10.
+
+
+使用方式
+=======
+```
+
+#java -jar ClickMonitor.jar -f short_url.log  -- 从一个文件分析日志
+
+#java -jar ClickMonitor.jar -- 默认启动HTTP服务，从ClickGate 读取实时日志分析
+
+
+```
 
 本地编译和运行
 ===========
