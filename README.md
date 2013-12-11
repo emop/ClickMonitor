@@ -12,3 +12,10 @@ ClickMonitor
 *  Redies -- 数据存储层。
 
 
+本地编译和运行
+===========
+
+```
+
+#mvn assembly:assembly  -- 编译一个完整的Jar包
+```
