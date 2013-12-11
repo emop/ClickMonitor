@@ -20,5 +20,6 @@
   <classpathentry kind="var" path="M2_REPO/org/apache/httpcomponents/httpclient/4.2.5/httpclient-4.2.5.jar"/>
   <classpathentry kind="var" path="M2_REPO/commons-codec/commons-codec/1.6/commons-codec-1.6.jar"/>
   <classpathentry kind="var" path="M2_REPO/commons-cli/commons-cli/1.2/commons-cli-1.2.jar"/>
-  <classpathentry kind="var" path="M2_REPO/org/jredis/jredis/2.1.0/jredis-2.1.0.jar"/>
+  <classpathentry kind="var" path="M2_REPO/redis/clients/jedis/2.1.0/jedis-2.1.0.jar"/>
+  <classpathentry kind="var" path="M2_REPO/commons-pool/commons-pool/1.5.5/commons-pool-1.5.5.jar"/>
 </classpath>

@@ -9,6 +9,8 @@ public interface Topology {
 	 * @param name 输入数据源的名字。
 	 * @param spout， 数据源
 	 */
+	public void setSpout(String name, DataSpout spout, String output);
+
 	public void setSpout(String name, DataSpout spout);
 
 	

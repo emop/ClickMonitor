@@ -1,6 +1,8 @@
 package com.taodian.monitor.core;
 
 import redis.clients.jedis.Jedis;
+import redis.clients.jedis.JedisPool;
+import redis.clients.jedis.JedisPoolConfig;
 
 import com.taodian.monitor.Settings;
 import com.taodian.monitor.model.ShortUrlModel;
@@ -11,15 +13,29 @@ import com.taodian.monitor.model.ShortUrlModel;
  * @author deonwu
  */
 public class DataService {
-	private Jedis jredis = null; //new JRedisClient(
+	private JedisPool connPool = null; //new JRedisClient(
 	
 	public boolean start(){
-		jredis = new Jedis(Settings.getString("redis.host", "127.0.0.1"));
 		
-		return true;
+		String host = Settings.getString("redis.host", "127.0.0.1");
+		connPool = new JedisPool(new JedisPoolConfig(), host);
+		Jedis c = getJedis();
+		String p = c.ping();
+		releaseConn(c);
+		return p != null && p.equals("PONG");
 	}
 	
 	public ShortUrlModel getShortUrl(String key){
 		return null;
+	}
+	
+	public Jedis getJedis(){
+		return connPool.getResource();
+	}
+	
+	public void releaseConn(Jedis jedis){
+		if(jedis != null){
+			connPool.returnResource(jedis);
+		}
 	}
 }

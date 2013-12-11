@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -12,6 +14,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.taodian.monitor.Settings;
+import com.taodian.monitor.bolt.AbstractClickMonitorBolt;
 import com.taodian.monitor.spout.FileDataSpout;
 import com.taodian.monitor.spout.HTTPURLSpout;
 import com.taodian.monitor.storm.ItemFactory;
@@ -146,10 +149,26 @@ public class ClickMonitor {
 	}
 	
 	class ObjectFactory implements ItemFactory{
-
+		private Map<String, Object> maps = new HashMap<String, Object>();
+		
 		@Override
 		public Object create(String name) {
-			return null;
+			Object tmp = maps.get(name);
+			if(tmp == null){
+				try {
+					Class cls = Class.forName(name);
+					tmp = cls.newInstance();
+					if(tmp instanceof AbstractClickMonitorBolt){
+						AbstractClickMonitorBolt b = (AbstractClickMonitorBolt)tmp;
+						b.setDataService(ds);
+					}
+					maps.put(name, tmp);
+				} catch (Exception e) {
+					log.error("Failed to create object, name:" + name, e);
+				}
+			}
+			
+			return tmp;
 		}
 		
 	}

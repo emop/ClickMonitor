@@ -21,6 +21,13 @@ public class DefaultSimpleTopology implements Topology {
 	}
 
 	@Override
+	public void setSpout(String name, DataSpout spout, String output) {
+		// TODO Auto-generated method stub
+		
+	}
+	
+	
+	@Override
 	public void setBolt(String from, DataBolt bolt, String output) {
 		// TODO Auto-generated method stub
 
@@ -32,12 +39,6 @@ public class DefaultSimpleTopology implements Topology {
 
 	}
 
-	/**
-	 * @param args
-	 */
-	public static void main(String[] args) {
-		// TODO Auto-generated method stub
 
-	}
 
 }
