@@ -40,7 +40,7 @@ public class Settings {
 	//private String[] masterSettings = new String[]{};
 	//private String[] routeSettings = new String[]{};
 	
-	public static void loadSettings(){
+	public static void loadSettings(String name){
 		try {
 			InputStream is = Settings.class.getClassLoader().getResourceAsStream(confName);
 			if(is != null){
