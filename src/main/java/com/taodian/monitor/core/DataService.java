@@ -137,7 +137,7 @@ public class DataService {
 				r.json = (JSONObject)JSONValue.parse(shortUrlData);
 				r.isOK = true;
 				fromJedis = true;
-				log.debug(String.format("load url data from redis"));
+				log.debug(String.format("load url '" + uri + "' data from redis"));
 			}else {
 				r = api.call("tool_convert_long_url", param);
 			}
