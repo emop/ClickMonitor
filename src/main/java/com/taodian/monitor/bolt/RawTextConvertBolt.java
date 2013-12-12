@@ -25,8 +25,7 @@ public class RawTextConvertBolt extends AbstractClickMonitorBolt {
 		// TODO Auto-generated method stub
 		String raw = data.get(ClickMonitor.DATA_RAW) + "";
 		
-		log.warn("click raw:" + raw);
-		
+		//log.warn("click raw:" + raw);		
 		Matcher ma =clickLog.matcher(raw);
 		if(ma != null && ma.find()){
 			ShortUrlModel model = ds.getShortUrl(ma.group(2));

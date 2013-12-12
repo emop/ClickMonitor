@@ -13,6 +13,7 @@ import java.util.concurrent.TimeUnit;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import com.taodian.api.TaodianApi;
 import com.taodian.monitor.Settings;
 import com.taodian.monitor.bolt.AbstractClickMonitorBolt;
 import com.taodian.monitor.spout.FileDataSpout;
@@ -77,6 +78,7 @@ public class ClickMonitor {
 	private ThreadPoolExecutor workPool = null;
 	private DataService ds = null;
 	private LinkedBlockingDeque<Runnable> taskQueue = null;
+	private TaodianApi api = null;
 	//private String inputFile = null;
 	
 	public static synchronized ClickMonitor getInstance(){
@@ -102,12 +104,6 @@ public class ClickMonitor {
 	 * 2. 加载spout 开始处理数据
 	 */
 	public void start(){
-		ds = new DataService();
-		if(!ds.start()){
-			log.error("Data service start failed");
-			System.exit(-1);
-		}
-		
 		int coreWrokerSize = Settings.getInt(Settings.CORE_WORKER_SIZE, 10);
 		int queueSize = Settings.getInt(Settings.WRITE_LOG_QUEUE_SIZE, 1024);
 		
@@ -121,6 +117,25 @@ public class ClickMonitor {
 				TimeUnit.SECONDS, 
 				taskQueue
 				);
+
+		String appKey = Settings.getString(Settings.TAODIAN_APPID, null); // System.getProperty("");
+		String appSecret = Settings.getString(Settings.TAODIAN_APPSECRET, null);
+		String appRoute = Settings.getString(Settings.TAODIAN_APPROUTE, "http://api.zaol.cn/api/route");
+		boolean inSAE = Settings.getString("in_sae", "n").equals("y");
+		
+		if(appKey != null && appSecret != null){
+			api = new TaodianApi(appKey, appSecret, appRoute, inSAE ? "simple" : "apache");		
+		}else {
+			log.info("The taodian.api_id and taodian.api_secret Java properties are required.");
+			System.exit(255);
+		}
+		
+		ds = new DataService();
+		if(!ds.start(workPool, api)){
+			log.error("Data service start failed");
+			System.exit(255);
+		}
+		
 		
 		topology = new DefaultSimpleTopology(workPool);			
 		TopologyBuilder builder = null; //new SimpleTopologyBuilder();

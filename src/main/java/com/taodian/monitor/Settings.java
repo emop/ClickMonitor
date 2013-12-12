@@ -37,14 +37,14 @@ public class Settings {
 	
 	private static Log log = LogFactory.getLog("click.settings");
 	protected static Properties settings = new Properties(); //System.getProperties();	
-	private static String confName = "short_url.conf";
+	//private static String confName = "short_url.conf";
 	
 	//private String[] masterSettings = new String[]{};
 	//private String[] routeSettings = new String[]{};
 	
 	public static void loadSettings(String name){
 		try {
-			InputStream is = Settings.class.getClassLoader().getResourceAsStream(confName);
+			InputStream is = Settings.class.getClassLoader().getResourceAsStream("click_monitor.conf");
 			if(is != null){
 				settings.load(is);
 			}
@@ -52,7 +52,7 @@ public class Settings {
 			log.error(e, e.getCause());
 		}
 		
-		File f = new File(confName);
+		File f = new File(name);
 		InputStream ins = null;
 		if(f.isFile()){
 			try {
