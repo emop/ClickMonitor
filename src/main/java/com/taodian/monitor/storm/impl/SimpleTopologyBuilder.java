@@ -53,6 +53,13 @@ public class SimpleTopologyBuilder implements TopologyBuilder{
 			}
 		}catch(IOException  e){
 			log.error(e, e);
+		}finally{
+			if(reader != null){
+				try {
+					reader.close();
+				} catch (IOException e) {
+				}
+			}
 		}
 	}
 

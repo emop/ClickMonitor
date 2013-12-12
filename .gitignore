@@ -7,4 +7,5 @@
 
 *.log
 
+logs/*.*
 target

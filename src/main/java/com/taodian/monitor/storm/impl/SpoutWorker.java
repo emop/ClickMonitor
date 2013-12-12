@@ -24,12 +24,19 @@ public class SpoutWorker implements Runnable {
 	@Override
 	public void run() {
 		try{
+			log.info("Spout is starting, sp:" + spout);
 			while(!spout.isClosed()){
-				DataCell cell = spout.nextDataCell();				
-				for(String queue: outQueue){
-					collector.emit(queue, cell);
+				DataCell cell = spout.nextDataCell();
+				if(cell != null) {
+					for(String queue: outQueue){
+						collector.emit(queue, cell);
+					}
+				}else {
+					log.debug("Get null data cell, waiting 0.1s try again, spout:" + spout);
+					Thread.sleep(100);					
 				}
 			}
+			log.info("Spout is closed, sp:" + spout);
 		}catch(Throwable e){
 			log.error(e, e);
 		}

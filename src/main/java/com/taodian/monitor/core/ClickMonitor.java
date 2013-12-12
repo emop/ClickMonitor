@@ -30,6 +30,40 @@ import com.taodian.monitor.storm.impl.SimpleTopologyBuilder;
  */
 
 public class ClickMonitor {
+	/**
+	 * 从点击网关过来得原始数据队列
+	 */
+	public static final String MQ_CLICK_GATE = "click_gate";
+
+	/**
+	 * 消息点击日志。
+	 */
+	public static final String MQ_CLICK_LOG = "click_log";
+	
+	/**
+	 * 短网址处理队列。
+	 */
+	public static final String MQ_SHORT_URL = "short_url";
+	/**
+	 * 新用户访问队列。
+	 */
+	public static final String MQ_NEW_VISITOR = "new_visitor";
+	/**
+	 * 告警队列。
+	 */
+	public static final String MQ_ALARM = "alarm";
+	
+	/**
+	 * 告警队列。
+	 */
+	public static final String DATA_RAW = "raw";
+	
+	/**
+	 * 短网址数据。
+	 */
+	public static final String DATA_SHORT_URL = "short_url";
+	
+	
 	private Log log = LogFactory.getLog("click.mointor");  
 	private static ClickMonitor ins = null;
 	private Topology topology = null;
@@ -127,7 +161,7 @@ public class ClickMonitor {
 	 * 
 	 */
 	public void shutdown(){
-		
+		workPool.shutdownNow();
 	}
 	
 	public boolean isCommandLineMode(){
@@ -138,7 +172,7 @@ public class ClickMonitor {
 	 * 等待所有的Spout结束，用在分析单个文件的时候。等待所有日志处理完成。
 	 */
 	public void waitAllSpoutDone(){
-		while(fileSpout != null && fileSpout.isClosed()){
+		while(fileSpout != null && !fileSpout.isClosed()){
 			synchronized(fileSpout){
 				try {
 					fileSpout.wait(1000);

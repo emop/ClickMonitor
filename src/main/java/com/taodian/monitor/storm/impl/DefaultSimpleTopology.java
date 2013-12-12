@@ -54,6 +54,7 @@ public class DefaultSimpleTopology implements Topology {
 		DataQueue q = queues.get(from);
 		if(q == null){
 			q = new DataQueue(from);
+			queues.put(from, q);
 		}
 		q.addDataBolt(bolt, output);
 	}
@@ -62,9 +63,9 @@ public class DefaultSimpleTopology implements Topology {
 	public void start() {
 		context = new TopologyContext();
 		
-		Set<DataBolt> bolts = new TreeSet<DataBolt>();
+		ArrayList<DataBolt> bolts = new ArrayList<DataBolt>();
 		for(DataQueue q: queues.values()){
-			for(DataBolt b:q.bolts){
+			for(DataBolt b : q.bolts){
 				if(bolts.contains(b))continue;
 				b.prepare(context);
 			}
@@ -72,6 +73,8 @@ public class DefaultSimpleTopology implements Topology {
 		for(Entry<DataSpout, List<String>> entry: spouts.entrySet()){
 			//s.prepare(context);
 			DataSpout s = entry.getKey();
+			s.prepare(context);
+			
 			List<String> out = entry.getValue();
 			executor.execute(new SpoutWorker(s, out, new QueueOutputCollector(out)));
 		}
@@ -99,7 +102,7 @@ public class DefaultSimpleTopology implements Topology {
 					}
 				}
 			}else {
-				log.error("'" + name + "' is not decleared.");
+				log.error("queue '" + name + "' is not decleared.");
 			}
 		}
 		
