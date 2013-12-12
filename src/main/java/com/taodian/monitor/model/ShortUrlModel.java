@@ -73,6 +73,8 @@ public class ShortUrlModel implements Serializable, Cloneable{
 	 * 点击访问的浏览器类型，1:iPad， 2:iPhone, 3:Android, 4:其他手机, 9:PC， 0：未知
 	 */
 	public int deviceType = 0;
+	public String deviceName = "";
+	public String browserName = "";
 	
 	/**
 	 * 冒泡网的，文案库ID。

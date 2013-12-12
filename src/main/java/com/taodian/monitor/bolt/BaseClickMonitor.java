@@ -1,18 +1,14 @@
 package com.taodian.monitor.bolt;
 
+import redis.clients.jedis.Jedis;
+
 import com.taodian.monitor.core.ClickMonitor;
+import com.taodian.monitor.core.DataService;
 import com.taodian.monitor.model.ShortUrlModel;
 import com.taodian.monitor.storm.DataCell;
 import com.taodian.monitor.storm.OutputCollector;
 
-/**
- * 用户点击来源分析，
- * 1. 是否有连续的相同地址。
- * 
- * @author deonwu
- *
- */
-public class ClickSourceMonitor extends AbstractClickMonitorBolt {
+public abstract class BaseClickMonitor extends AbstractClickMonitorBolt {
 
 	@Override
 	public void execute(DataCell data, OutputCollector output) {
@@ -20,8 +16,17 @@ public class ClickSourceMonitor extends AbstractClickMonitorBolt {
 		if(m == null) return;
 		
 		ShortUrlModel obj = (ShortUrlModel)m;
-		
-		log.info("access user:" + obj.uid + ", ip:" + obj.ip + ", shop id:" + obj.shopId + ", num id:" + obj.numIid + ", dn:" + obj.deviceName + ", o:" + obj.browserName);
+		Jedis d = this.dsPool.getJedis(DataService.DS_CPC_MONITOR);
+		try{
+			check(obj, d, output);
+		}finally{
+			if(d != null){
+				dsPool.releaseConn(d);
+			}
+		}
 	}
+	
+	protected abstract void check(ShortUrlModel obj, Jedis ds, OutputCollector output);
+
 
 }

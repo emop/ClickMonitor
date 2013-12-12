@@ -5,6 +5,11 @@ import com.taodian.monitor.storm.DataCell;
 import com.taodian.monitor.storm.OutputCollector;
 import com.taodian.monitor.storm.TopologyContext;
 
+/**
+ * 1.  最近日志分析
+ * 2.  历史结合分析
+ * 3.  规则参数分析
+ */
 public class SimpleCount implements DataBolt {
 
 

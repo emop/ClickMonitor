@@ -28,6 +28,10 @@ import com.taodian.monitor.storm.utils.SimpleCacheApi;
  * @author deonwu
  */
 public class DataService {
+	public static final int DS_CPC_MONITOR = 2;
+	public static final int DS_LOG_REPORT = 3;
+	
+	
 	private Log log = LogFactory.getLog("lm.data");  
 
 	private JedisPool connPool = null; //new JRedisClient(
@@ -57,6 +61,12 @@ public class DataService {
 	public Jedis getJedis(){
 		return connPool.getResource();
 	}
+	
+	public Jedis getJedis(int db){
+		Jedis d = connPool.getResource();
+		d.select(db);
+		return d;
+	}	
 	
 	public void releaseConn(Jedis jedis){
 		if(jedis != null){

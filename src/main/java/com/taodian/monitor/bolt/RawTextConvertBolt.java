@@ -16,6 +16,8 @@ import com.taodian.monitor.storm.OutputCollector;
  *
  */
 public class RawTextConvertBolt extends AbstractClickMonitorBolt {
+	private Pattern isMobile = Pattern.compile("Mobile|iPhone|Android|WAP|NetFront|JAVA|OperasMini|UCWEB|WindowssCE|Symbian|Series|webOS|SonyEricsson|Sony|BlackBerry|Cellphone|dopod|Nokia|samsung|PalmSource|Xphone|Xda|Smartphone|PIEPlus|MEIZU|MIDP|CLDC", Pattern.CASE_INSENSITIVE);
+
 	private Pattern clickLog = Pattern.compile("([0-9\\-]+\\s[0-9:]+)\\s(\\w+)\\s(\\d+)\\s([\\d\\.]+)\\s\\[([^\\]]+)\\](.*)");
 	//12-12 12:53:09 8MMr3 39893389498 115.194.90.124 [Mozilla/5.0 (Windows NT 5.1) AppleWebKit/537.1 (KHTML, like Gecko) Chrome/21.0.1180.89 Safari/537.1]
 	//private static DateFormat timeFormate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -28,7 +30,7 @@ public class RawTextConvertBolt extends AbstractClickMonitorBolt {
 		//log.warn("click raw:" + raw);		
 		Matcher ma =clickLog.matcher(raw);
 		if(ma != null && ma.find()){
-			ShortUrlModel model = ds.getShortUrl(ma.group(2));
+			ShortUrlModel model = dsPool.getShortUrl(ma.group(2));
 			if(model != null){
 				model.shortKey = ma.group(2);
 				model.uid = ma.group(3);
@@ -48,7 +50,12 @@ public class RawTextConvertBolt extends AbstractClickMonitorBolt {
 				}
 				
 				data.set(ClickMonitor.MQ_SHORT_URL, model);
+				
+				insepctorAccessInfo(model);
 				output.emit(ClickMonitor.MQ_CLICK_LOG, data);
+				if(model.shortKeySource != null && model.shortKeySource.equals("cpc")){
+					output.emit(ClickMonitor.MQ_CPC_LOG, data);					
+				}
 			}else {
 				log.warn("Not found short url:" + ma.group(2));				
 			}
@@ -56,5 +63,42 @@ public class RawTextConvertBolt extends AbstractClickMonitorBolt {
 
 	}
 
-
+	private void insepctorAccessInfo(ShortUrlModel model){
+		String agent = model.agent;
+		if(agent == null || agent.trim().length() == 0){
+		}
+		
+		if(agent.contains("iPad")){
+			model.deviceType = 1;
+			model.deviceName = "iPad";
+		}else if(agent.contains("iPhone")){
+			model.deviceType = 2;
+			model.deviceName = "iPhone";
+		}else if(agent.contains("Android")){
+			model.deviceType = 3;
+			model.deviceName = "Android";
+		}else if(isMobile.matcher(agent).find()){
+			model.deviceType = 4;
+			model.deviceName = "OtherMobile";
+		}else {
+			model.deviceType = 9;
+			model.deviceName = "PC";			
+		}
+		
+		String[] names = new String[]{
+		"firefox", "msie", "opera", "chrome", "safari",
+        "mozilla", "seamonkey",    "konqueror", "netscape",
+        "gecko", "navigator", "mosaic", "lynx", "amaya",
+        "omniweb", "avant", "camino", "flock", "aol"};
+		
+		for(String n : names) {
+			String reg = "(" + n +"[/ ]?([0-9.]*)?)";
+			Pattern pa = Pattern.compile(reg, Pattern.CASE_INSENSITIVE);
+			Matcher ma = pa.matcher(agent);
+			if(ma.find()){
+				model.browserName = ma.group(1);
+				break;
+			}
+		}
+	}
 }

@@ -12,10 +12,10 @@ public abstract class AbstractClickMonitorBolt implements DataBolt{
 	//private Log log = LogFactory.getLog("click.mointor");  
 	protected Log log = LogFactory.getLog("lm.mointor.bolt");  
 	
-	protected DataService ds = null;
+	protected DataService dsPool = null;
 	
 	public void setDataService(DataService s){
-		this.ds = s;
+		this.dsPool = s;
 	}
 	
 	@Override

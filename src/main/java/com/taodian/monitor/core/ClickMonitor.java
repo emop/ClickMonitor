@@ -40,7 +40,8 @@ public class ClickMonitor {
 	 * 消息点击日志。
 	 */
 	public static final String MQ_CLICK_LOG = "click_log";
-	
+	public static final String MQ_CPC_LOG = "cpc_log";
+
 	/**
 	 * 短网址处理队列。
 	 */
@@ -53,6 +54,7 @@ public class ClickMonitor {
 	 * 告警队列。
 	 */
 	public static final String MQ_ALARM = "alarm";
+	
 	
 	/**
 	 * 告警队列。
