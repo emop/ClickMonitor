@@ -1,0 +1,18 @@
+*** Settings ***
+Library       OperatingSystem
+
+*** Variables ***
+${MONITOR_JAR}    ../target/ClickMonitor-1.0-SNAPSHOT.jar
+${REDIES_CLIENT}    redis-cli
+
+			
+*** Keywords ***
+Cleanup all alarm data
+	Run    ${REDIES_CLIENT} -n 2 FLUSHDB
+
+Process click log
+	[Arguments]   ${click_log}   ${alarm_log}
+	${rc}   ${output}   Run And Return Rc And Output	java -jar ${MONITOR_JAR} -file ${click_log} -output ${alarm_log}
+	Log   ${output}
+	Should be equal as Integers   0   ${rc}
+	

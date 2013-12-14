@@ -1,0 +1,17 @@
+*** Settings ***
+Resource    ClickMonitor.txt
+Test setup   Cleanup all alarm data
+
+*** Variables ***
+${MONITOR_JAR}    ../target/ClickMonitor-1.0-SNAPSHOT.jar
+${REDIES_CLIENT}    redis-cli
+
+*** Test Cases ***
+
+相同设备连续访问，应该产生告警信息
+	[Documentation]    
+	${OUTPUT_LOG}   Set variable   ${EXECDIR}/alarm.log
+	Process click log   ${CURDIR}/data/access_log.data   ${OUTPUT_LOG}
+	${alarms}   Get File   ${OUTPUT_LOG}
+	Log   ${alarms}
+	Should Contain   ${alarms}   10001 9 连续相同设备
