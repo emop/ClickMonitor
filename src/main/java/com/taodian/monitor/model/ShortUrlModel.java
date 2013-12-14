@@ -14,6 +14,12 @@ import java.util.Date;
  * @author deonwu
  */
 public class ShortUrlModel implements Serializable, Cloneable{
+	public static final int DEVICE_PC = 9;
+	public static final int DEVICE_IPAD = 1;
+	public static final int DEVICE_IPHONE = 2;
+	public static final int DEVICE_ANDROID = 3;
+	public static final int DEVICE_OTHER_MOBILE = 4;	
+	
 	/**
 	 * 
 	 */
@@ -75,6 +81,9 @@ public class ShortUrlModel implements Serializable, Cloneable{
 	public int deviceType = 0;
 	public String deviceName = "";
 	public String browserName = "";
+	
+	public String agentHash = "";
+	public String referHash = "";
 	
 	/**
 	 * 冒泡网的，文案库ID。

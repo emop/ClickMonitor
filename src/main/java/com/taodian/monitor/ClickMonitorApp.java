@@ -23,6 +23,8 @@ public class ClickMonitorApp {
 	
 	public static final String VERSION = "version";
 	public static final String INPUTFILE = "file";
+	public static final String OUTPUTFILE = "output";
+
 	public static final String CONFIG = "cfg";
 
 	public static final String RESET_REPORT = "reset";
@@ -39,7 +41,10 @@ public class ClickMonitorApp {
 		options.addOption(VERSION, false, "show version.");
 		options.addOption(CONFIG, true, "the config file, default is monitor.conf, None does not read config file.");
 		options.addOption(INPUTFILE, true, "read logs from a file.");
+		options.addOption(OUTPUTFILE, true, "write alrm to a file.");
+
 		options.addOption(RESET_REPORT, true, "reset the monitor data from a date");
+		
 		
 		CommandLine cmd = null;
 		
@@ -62,6 +67,9 @@ public class ClickMonitorApp {
 		
 		ClickMonitor cm = ClickMonitor.getInstance();
 		
+		if(cmd.hasOption(OUTPUTFILE)){
+			Settings.set(Settings.ALARM_WRITE_TO_FILE, cmd.getOptionValue(OUTPUTFILE));
+		}
 		if(cmd.hasOption(INPUTFILE)){
 			cm.setInputFile(cmd.getOptionValue(INPUTFILE));
 		}

@@ -65,6 +65,7 @@ public class ClickMonitor {
 	 * 短网址数据。
 	 */
 	public static final String DATA_SHORT_URL = "short_url";
+	public static final String DATA_ALARM = "alarm";
 	
 	
 	private Log log = LogFactory.getLog("click.mointor");  

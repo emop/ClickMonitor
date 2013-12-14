@@ -34,6 +34,8 @@ public class Settings {
 	
 	public static final String CLICK_GATE_LOG_URL = "click_gate_url";
 
+	public static final String ALARM_WRITE_TO_FILE = "alarm_write_to_file";
+
 	
 	private static Log log = LogFactory.getLog("click.settings");
 	protected static Properties settings = new Properties(); //System.getProperties();	
@@ -87,6 +89,10 @@ public class Settings {
 		
 		return intVal;
 	}	
+	
+	public static void set(String name, String value){
+		settings.put(name, value);
+	}
 	
 	public static void dumpSetting(PrintWriter out) throws IOException{
 		

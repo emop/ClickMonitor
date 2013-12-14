@@ -6,6 +6,7 @@ import java.text.SimpleDateFormat;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.taodian.api.TaodianApi;
 import com.taodian.monitor.core.ClickMonitor;
 import com.taodian.monitor.model.ShortUrlModel;
 import com.taodian.monitor.storm.DataCell;
@@ -47,6 +48,12 @@ public class RawTextConvertBolt extends AbstractClickMonitorBolt {
 					model.clickTime = timeFormate.parse(time);
 				} catch (ParseException e) {
 					log.warn("parse error:" + time + ", exception:" + e, e);
+				}
+				if(model.refer != null){
+					model.referHash = TaodianApi.MD5(model.refer);
+				}
+				if(model.agent != null){
+					model.agentHash = TaodianApi.MD5(model.agent);
 				}
 				
 				data.set(ClickMonitor.MQ_SHORT_URL, model);
