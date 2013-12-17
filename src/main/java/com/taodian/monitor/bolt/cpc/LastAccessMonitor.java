@@ -61,7 +61,7 @@ public class LastAccessMonitor extends BaseClickMonitor {
 		if(sBrowsers.count > 10){
 			ST sIps = statistics(obj.ip, ips.get());
 			ST sDevices = statistics(obj.deviceName, devices.get());
-			ST sAgents = statistics(obj.agentHash, devices.get());
+			ST sAgents = statistics(obj.agentHash, agents.get());
 			
 			alarmMonitor(output, obj, sBrowsers, sIps, sDevices, sAgents);
 		}
@@ -69,12 +69,16 @@ public class LastAccessMonitor extends BaseClickMonitor {
 	
 	protected void raiseAlarm(OutputCollector output, int id, int userId, String desc){
 		DataCell cell = new DataCell();
-		cell.set(ClickMonitor.DATA_ALARM, new ClickAlarm(id, userId, desc));
-		output.emit(ClickMonitor.MQ_ALARM, cell);		
+		ClickAlarm alarm = new ClickAlarm(id, userId, desc);
+		cell.set(ClickMonitor.DATA_ALARM, alarm);
+		output.emit(ClickMonitor.MQ_ALARM, cell);
+		
+		//String f1 = String.format("%s %s %s", alarm.alaramID, alarm.userId, alarm.desc);
+		//log.info("file:" + f1);
 	}
 	
 	private void alarmMonitor(OutputCollector output, ShortUrlModel obj, ST browser, ST ip, ST devices, ST agents){
-		List<ClickAlarm> alarm = null;
+		//List<ClickAlarm> alarm = null;
 		if(devices.count > 10){
 			if(devices.cons / devices.count > 0.50){
 				raiseAlarm(output, ClickAlarm.SAME_CLIENT, obj.userId, "连续相同设备，超过最近访问的50%");

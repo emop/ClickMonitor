@@ -37,6 +37,9 @@ public class WriteAlarmToFileBolt extends BaseAlarmBolt {
 	
 	@Override
 	protected void alarm(ClickAlarm alarm, OutputCollector output) {
+		//String f1 = String.format("%s %s %s", alarm.alaramID, alarm.userId, alarm.desc);
+		//log.info("file:" + f1);
+		
 		if(writer != null){
 			String f = String.format("%s %s %s", alarm.alaramID, alarm.userId, alarm.desc);
 			writer.println(f);

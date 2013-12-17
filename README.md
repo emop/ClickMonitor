@@ -25,6 +25,7 @@ ClickMonitor
 *  core_worker_size -- 消息处理线程数量。
 *  click_gate_url -- 配置实时日志流来源，例如: http://c.zaol.cn/log/?token=test&id=1
 *  redis.host -- redis数据库地址，默认:127.0.0.1
+*  save_to_db -- 需要把告警写入到数据库, 默认:n, (y|n)
 
 使用方式
 =======

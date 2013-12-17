@@ -21,7 +21,7 @@ public class ClickSourceMonitor extends AbstractClickMonitorBolt {
 		
 		ShortUrlModel obj = (ShortUrlModel)m;
 		
-		log.info("access user:" + obj.uid + ", ip:" + obj.ip + ", shop id:" + obj.shopId + ", num id:" + obj.numIid + ", device:" + obj.deviceName + ", browser:" + obj.browserName);
+		log.info("access user:" + obj.uid + ", ip:" + obj.ip + ", shop id:" + obj.shopId + ", num id:" + obj.numIid + ", device:" + obj.deviceName + ", browser:" + obj.browserName + ", source:" + obj.shortKeySource);
 	}
 
 }

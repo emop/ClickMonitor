@@ -74,6 +74,10 @@ public class DataService {
 		}
 	}
 	
+	public TaodianApi getTaodianApi(){
+		return api;
+	}
+	
 	public ShortUrlModel getShortUrl(final String key, boolean noCache){
 		Object tmp = null;
 		
