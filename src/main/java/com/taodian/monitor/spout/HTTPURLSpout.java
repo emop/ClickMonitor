@@ -19,6 +19,8 @@ public class HTTPURLSpout implements DataSpout {
 	protected URL logGate = null;
 	private BufferedReader reader = null;
 	protected HttpURLConnection connection = null;
+	
+	protected int connectionRetry = 0;
 
 	public HTTPURLSpout(){
 		
@@ -38,8 +40,10 @@ public class HTTPURLSpout implements DataSpout {
 		String line = null;
 		DataCell d = null;
 		try {
-			line = reader.readLine();
-			log.debug("log:" + line);
+			if(reader != null){
+				line = reader.readLine();
+				log.debug("log:" + line);
+			}
 			if(line != null){
 				d = new DataCell();
 				d.set(ClickMonitor.DATA_RAW, line.trim());
@@ -65,7 +69,7 @@ public class HTTPURLSpout implements DataSpout {
 	@Override
 	public boolean isClosed() {
 		// TODO Auto-generated method stub
-		return reader == null;
+		return connectionRetry < 10;
 	}
 
 	
@@ -82,6 +86,14 @@ public class HTTPURLSpout implements DataSpout {
 		}
 		if(connection != null){
 			connection.disconnect();
+		}
+		
+		if(connectionRetry > 0){
+			log.debug("wait " + connectionRetry + "s to connect....");
+			try {
+				Thread.sleep(connectionRetry * 2000);
+			} catch (InterruptedException e) {
+			}
 		}
 		
 		log.debug("connecting to " + logGate.toString());
@@ -103,6 +115,7 @@ public class HTTPURLSpout implements DataSpout {
 			}
 		} catch (IOException e) {
 			log.error(e.toString(), e);
+			connectionRetry++;
 		}
 		
 		return false;
