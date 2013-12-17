@@ -18,7 +18,8 @@ public class HTTPURLSpout implements DataSpout {
 	protected Log log = LogFactory.getLog("lm.mointor.spout");  
 	protected URL logGate = null;
 	private BufferedReader reader = null;
-	
+	protected HttpURLConnection connection = null;
+
 	public HTTPURLSpout(){
 		
 	}
@@ -79,8 +80,9 @@ public class HTTPURLSpout implements DataSpout {
 			}
 			reader = null;
 		}
-		
-		HttpURLConnection connection = null;
+		if(connection != null){
+			connection.disconnect();
+		}
 		
 		log.debug("connecting to " + logGate.toString());
 		try {
