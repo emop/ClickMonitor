@@ -68,8 +68,7 @@ public class HTTPURLSpout implements DataSpout {
 
 	@Override
 	public boolean isClosed() {
-		// TODO Auto-generated method stub
-		return connectionRetry < 10;
+		return connectionRetry > 10;
 	}
 
 	
