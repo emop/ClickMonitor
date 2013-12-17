@@ -107,6 +107,7 @@ public class HTTPURLSpout implements DataSpout {
 			//if(reader.)
 			String c = reader.readLine();
 			if(c.trim().startsWith("CONNECTED")){
+				connectionRetry = 0;
 				return true;
 			}else {
 				log.info("Failed to connect to click gate, msg:" + c);
