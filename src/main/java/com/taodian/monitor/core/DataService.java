@@ -37,6 +37,7 @@ public class DataService {
 
 	public static final int DS_CPC_MONITOR = 2;
 	public static final int DS_LOG_REPORT = 3;
+	public static final int DS_USER_LOG = 4;
 	
 	
 	private Log log = LogFactory.getLog("lm.data");  
