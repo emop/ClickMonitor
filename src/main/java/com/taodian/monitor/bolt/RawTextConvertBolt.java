@@ -9,6 +9,7 @@ import java.util.regex.Pattern;
 import com.taodian.api.TaodianApi;
 import com.taodian.monitor.core.ClickMonitor;
 import com.taodian.monitor.model.ShortUrlModel;
+import com.taodian.monitor.model.WeiboVisitor;
 import com.taodian.monitor.storm.DataCell;
 import com.taodian.monitor.storm.OutputCollector;
 
@@ -20,8 +21,12 @@ public class RawTextConvertBolt extends AbstractClickMonitorBolt {
 	private Pattern isMobile = Pattern.compile("Mobile|iPhone|Android|WAP|NetFront|JAVA|OperasMini|UCWEB|WindowssCE|Symbian|Series|webOS|SonyEricsson|Sony|BlackBerry|Cellphone|dopod|Nokia|samsung|PalmSource|Xphone|Xda|Smartphone|PIEPlus|MEIZU|MIDP|CLDC", Pattern.CASE_INSENSITIVE);
 
 	private Pattern clickLog = Pattern.compile("([0-9\\-]+\\s[0-9:]+)\\s(\\w+)\\s(\\d+)\\s([\\d\\.]+)\\s\\[([^\\]]+)\\](.*)");
+
 	//12-12 12:53:09 8MMr3 39893389498 115.194.90.124 [Mozilla/5.0 (Windows NT 5.1) AppleWebKit/537.1 (KHTML, like Gecko) Chrome/21.0.1180.89 Safari/537.1]
 	//private static DateFormat timeFormate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+	
+	private Pattern newUser = Pattern.compile("new_uid:([0-9]+),mobile:(\\w+),ip:([\\d\\.]+),host:([\\.\\w]+),agent:\\[([^\\]]+)\\],created:([0-9\\-]+\\s[0-9:]+)");
+	//new_uid:25320970001,mobile:false,ip:127.0.0.1,host:127.0.0.1,agent:[Mozilla/5.0 (Macintosh; Intel Mac OS X 10_8_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/31.0.1650.63 Safari/537.36],created:2013-12-17 23:02:12
 	
 	@Override
 	public void execute(DataCell data, OutputCollector output) {
@@ -30,6 +35,7 @@ public class RawTextConvertBolt extends AbstractClickMonitorBolt {
 		
 		//log.warn("click raw:" + raw);		
 		Matcher ma =clickLog.matcher(raw);
+		DateFormat timeFormate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		if(ma != null && ma.find()){
 			ShortUrlModel model = dsPool.getShortUrl(ma.group(2));
 			if(model != null){
@@ -39,7 +45,6 @@ public class RawTextConvertBolt extends AbstractClickMonitorBolt {
 				model.agent = ma.group(5);
 				model.refer = ma.group(6);
 				
-				DateFormat timeFormate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 				String time = ma.group(1);
 				if(time.length() < 19){
 					time = "2013-" + time;
@@ -49,11 +54,23 @@ public class RawTextConvertBolt extends AbstractClickMonitorBolt {
 				} catch (ParseException e) {
 					log.warn("parse error:" + time + ", exception:" + e, e);
 				}
+				
 				if(model.refer != null){
 					model.referHash = TaodianApi.MD5(model.refer);
 				}
 				if(model.agent != null){
 					model.agentHash = TaodianApi.MD5(model.agent);
+				}
+				
+				model.visitor = dsPool.getWeiboVisitor(Long.parseLong(model.uid));
+				if(model.visitor != null && model.visitor.noSave){
+					model.visitor.isFirst = true;
+					dsPool.saveWeiboVisitor(model.visitor);
+					
+					data.set(ClickMonitor.MQ_NEW_VISITOR, model.visitor);
+					output.emit(ClickMonitor.MQ_NEW_VISITOR, data);
+				}else if(model.visitor != null){
+					model.visitor.isFirst = false;
 				}
 				
 				data.set(ClickMonitor.MQ_SHORT_URL, model);
@@ -66,7 +83,30 @@ public class RawTextConvertBolt extends AbstractClickMonitorBolt {
 			}else {
 				log.warn("Not found short url:" + ma.group(2));				
 			}
-		}		
+		}else if(raw.startsWith("new_uid")) {
+			ma = newUser.matcher(raw);
+			if(ma != null && ma.find()){
+				WeiboVisitor visitor = new WeiboVisitor();
+				
+				visitor.uid = Long.parseLong(ma.group(1));
+				visitor.isMobile = Boolean.parseBoolean(ma.group(2));
+				visitor.ip = ma.group(3);
+				visitor.host = ma.group(4);
+				visitor.agent = ma.group(5);
+				try {
+					visitor.created = timeFormate.parse(ma.group(6));
+				} catch (ParseException e) {
+				}
+				
+				log.debug("create new user:" + visitor.uid);
+				dsPool.newWeiboVisitor(visitor);
+				
+				data.set(ClickMonitor.MQ_NEW_VISITOR, visitor);
+				output.emit(ClickMonitor.MQ_NEW_VISITOR, data);					
+			}else {
+				log.warn("Failed to parse user log:" + raw);
+			}
+		}
 
 	}
 

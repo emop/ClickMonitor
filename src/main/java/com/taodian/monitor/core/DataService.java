@@ -1,5 +1,9 @@
 package com.taodian.monitor.core;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.BlockingQueue;
@@ -19,6 +23,7 @@ import com.taodian.api.TaodianApi;
 import com.taodian.emop.http.HTTPResult;
 import com.taodian.monitor.Settings;
 import com.taodian.monitor.model.ShortUrlModel;
+import com.taodian.monitor.model.WeiboVisitor;
 import com.taodian.monitor.storm.utils.CacheApi;
 import com.taodian.monitor.storm.utils.SimpleCacheApi;
 
@@ -28,6 +33,8 @@ import com.taodian.monitor.storm.utils.SimpleCacheApi;
  * @author deonwu
  */
 public class DataService {
+	public static final int DS_COMMON_DATA = 1;
+
 	public static final int DS_CPC_MONITOR = 2;
 	public static final int DS_LOG_REPORT = 3;
 	
@@ -77,6 +84,83 @@ public class DataService {
 	public TaodianApi getTaodianApi(){
 		return api;
 	}
+	
+	/**
+	 * 新生成的用户，不立即保存，等到第一次由访问记录的时候保存。避免因为爬虫生成无效的用户信息。
+	 * @param v
+	 */
+	public void newWeiboVisitor(WeiboVisitor v){
+		String ck = "user_" + v.uid;	
+		v.noSave = true;
+		cache.set(ck, v, 20);
+	}
+	
+	public WeiboVisitor getWeiboVisitor(long uid){
+		String ck = "user_" + uid;
+		Object obj = cache.get(ck);
+		if(obj == null){
+			obj = loadFromDb(uid);
+			if(obj == null){
+				log.debug("not found uid:" + uid);
+				WeiboVisitor t = new WeiboVisitor();
+				t.uid = uid;
+				t.created = new Date(System.currentTimeMillis() - 24 * 60 * 60 * 1000);
+				t.host = "na";
+				t.agent = "na";
+				t.ip = "na";
+				
+				obj = t;
+			}else {
+				log.debug("load uid from redis:" + uid);
+			}
+			cache.set(ck, obj, 30 * 60);
+		}
+		return (WeiboVisitor)obj;
+	}	
+	
+	public void saveWeiboVisitor(WeiboVisitor v){
+		DateFormat timeFormate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		v.noSave = false;
+		Jedis j = getJedis(DS_COMMON_DATA);
+		
+		String data = "%s$%s$%s$%s$%s$%s";
+		data = String.format(data, v.uid, v.isMobile, v.ip, v.host, timeFormate.format(v.created), v.agent);		
+		j.set("user_" + v.uid, data);
+		
+		releaseConn(j);
+	}
+	
+	protected WeiboVisitor loadFromDb(long uid){
+		DateFormat timeFormate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		WeiboVisitor v = null;
+		Jedis j = getJedis(DS_COMMON_DATA);
+		
+		String data = j.get("user_" + uid);
+		if(data != null && data.length() > 10){
+			v = new WeiboVisitor();
+			v.noSave = false;
+			v.isFirst = false;
+			
+			String tmp[] = data.split("\\$");
+			switch(tmp.length){
+				case 6: v.agent = tmp[5];
+				case 5: try {
+					v.created = timeFormate.parse(tmp[4]);
+				} catch (ParseException e) {
+				}
+				case 4: v.host = tmp[3];
+				case 3: v.ip = tmp[2];
+				case 2: v.isMobile = Boolean.parseBoolean(tmp[1]);
+				v.uid = Long.parseLong(tmp[0]);
+			}
+		}
+		releaseConn(j);
+		
+		return v;
+	}
+	
+	
+	
 	
 	public ShortUrlModel getShortUrl(final String key, boolean noCache){
 		Object tmp = null;
@@ -140,7 +224,7 @@ public class DataService {
 
 		String errorMsg = "";
 		Jedis j = getJedis();
-		j.select(1);
+		j.select(DS_COMMON_DATA);
 
 		for(int i = 0; i < 2; i++){
 			String shortUrlData = j.get(uri);

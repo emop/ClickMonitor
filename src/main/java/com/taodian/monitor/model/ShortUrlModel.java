@@ -44,6 +44,11 @@ public class ShortUrlModel implements Serializable, Cloneable{
 	public String uid = null;
 	
 	/**
+	 * uid 对应的用户对象。
+	 */
+	public WeiboVisitor visitor = null;
+	
+	/**
 	 * 点击的浏览器，User-agent, 包含浏览器类型等信息。
 	 */
 	public String agent = null;
