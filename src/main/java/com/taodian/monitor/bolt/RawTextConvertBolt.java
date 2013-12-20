@@ -34,81 +34,112 @@ public class RawTextConvertBolt extends AbstractClickMonitorBolt {
 		String raw = data.get(ClickMonitor.DATA_RAW) + "";
 		
 		//log.warn("click raw:" + raw);		
-		Matcher ma =clickLog.matcher(raw);
 		DateFormat timeFormate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-		if(ma != null && ma.find()){
-			ShortUrlModel model = dsPool.getShortUrl(ma.group(2));
-			if(model != null){
-				model.shortKey = ma.group(2);
-				model.uid = ma.group(3);
-				model.ip = ma.group(4);
-				model.agent = ma.group(5);
-				model.refer = ma.group(6);
-				
-				String time = ma.group(1);
-				if(time.length() < 19){
-					time = "2013-" + time;
-				}
-				try {
-					model.clickTime = timeFormate.parse(time);
-				} catch (ParseException e) {
-					log.warn("parse error:" + time + ", exception:" + e, e);
-				}
-				
-				if(model.refer != null){
-					model.referHash = TaodianApi.MD5(model.refer);
-				}
-				if(model.agent != null){
-					model.agentHash = TaodianApi.MD5(model.agent);
-				}
-				
-				model.visitor = dsPool.getWeiboVisitor(Long.parseLong(model.uid));
-				if(model.visitor != null && model.visitor.noSave){
-					model.visitor.isFirst = true;
-					dsPool.saveWeiboVisitor(model.visitor);
+		if(raw.startsWith("$")){
+			String[] tmp = raw.split("\\$");
+			if(tmp.length > 5){
+				ShortUrlModel model = dsPool.getShortUrl(tmp[2]);
+				if(model != null){
+					switch(tmp.length){
+						case 8: model.refer = tmp[7];
+						case 7: model.agent = tmp[6];
+						case 6: model.ip = tmp[5];
+						case 5: model.uid = tmp[4];
+						model.shortKey = tmp[2];
+					}
+					try {
+						model.clickTime = timeFormate.parse(tmp[1]);
+					} catch (ParseException e) {
+						log.warn("parse error:" + tmp[1] + ", exception:" + e, e);
+					}
+					model.action = tmp[3];
 					
-					data.set(ClickMonitor.MQ_NEW_VISITOR, model.visitor);
-					output.emit(ClickMonitor.MQ_NEW_VISITOR, data);
-				}else if(model.visitor != null){
-					model.visitor.isFirst = false;
+					processClickLog(model, data, output);
+				}else {
+					log.warn("Not found short url:" + tmp[2]);	
 				}
-				
-				data.set(ClickMonitor.MQ_SHORT_URL, model);
-				
-				insepctorAccessInfo(model);
-				output.emit(ClickMonitor.MQ_CLICK_LOG, data);
-				if(model.shortKeySource != null && model.shortKeySource.equals("cpc")){
-					output.emit(ClickMonitor.MQ_CPC_LOG, data);					
-				}
-			}else {
-				log.warn("Not found short url:" + ma.group(2));				
 			}
-		}else if(raw.startsWith("new_uid")) {
-			ma = newUser.matcher(raw);
+		}else {
+			Matcher ma =clickLog.matcher(raw);
 			if(ma != null && ma.find()){
-				WeiboVisitor visitor = new WeiboVisitor();
-				
-				visitor.uid = Long.parseLong(ma.group(1));
-				visitor.isMobile = Boolean.parseBoolean(ma.group(2));
-				visitor.ip = ma.group(3);
-				visitor.host = ma.group(4);
-				visitor.agent = ma.group(5);
-				try {
-					visitor.created = timeFormate.parse(ma.group(6));
-				} catch (ParseException e) {
+				ShortUrlModel model = dsPool.getShortUrl(ma.group(2));
+				if(model != null){
+					model.shortKey = ma.group(2);
+					model.uid = ma.group(3);
+					model.ip = ma.group(4);
+					model.agent = ma.group(5);
+					model.refer = ma.group(6);
+					
+					String time = ma.group(1);
+					if(time.length() < 19){
+						time = "2013-" + time;
+					}
+					try {
+						model.clickTime = timeFormate.parse(time);
+					} catch (ParseException e) {
+						log.warn("parse error:" + time + ", exception:" + e, e);
+					}
+					processClickLog(model, data, output);
+				}else {
+					log.warn("Not found short url:" + ma.group(2));				
 				}
-				
-				log.debug("create new user:" + visitor.uid);
-				dsPool.newWeiboVisitor(visitor);
-				
-				data.set(ClickMonitor.MQ_NEW_VISITOR, visitor);
-				output.emit(ClickMonitor.MQ_NEW_VISITOR, data);					
-			}else {
-				log.warn("Failed to parse user log:" + raw);
+			}else if(raw.startsWith("new_uid")) {
+				ma = newUser.matcher(raw);
+				if(ma != null && ma.find()){
+					WeiboVisitor visitor = new WeiboVisitor();
+					
+					visitor.uid = Long.parseLong(ma.group(1));
+					visitor.isMobile = Boolean.parseBoolean(ma.group(2));
+					visitor.ip = ma.group(3);
+					visitor.host = ma.group(4);
+					visitor.agent = ma.group(5);
+					try {
+						visitor.created = timeFormate.parse(ma.group(6));
+					} catch (ParseException e) {
+					}
+					
+					log.debug("create new user:" + visitor.uid);
+					dsPool.newWeiboVisitor(visitor);
+					
+					data.set(ClickMonitor.MQ_NEW_VISITOR, visitor);
+					output.emit(ClickMonitor.MQ_NEW_VISITOR, data);					
+				}else {
+					log.warn("Failed to parse user log:" + raw);
+				}
 			}
 		}
 
 	}
+	
+	private void processClickLog(ShortUrlModel model, DataCell data, OutputCollector output){
+		if(model.refer != null){
+			model.referHash = TaodianApi.MD5(model.refer);
+		}
+		if(model.agent != null){
+			model.agentHash = TaodianApi.MD5(model.agent);
+		}
+		
+		model.visitor = dsPool.getWeiboVisitor(Long.parseLong(model.uid));
+		if(model.visitor != null && model.visitor.noSave){
+			model.visitor.isFirst = true;
+			dsPool.saveWeiboVisitor(model.visitor);
+			
+			data.set(ClickMonitor.MQ_NEW_VISITOR, model.visitor);
+			output.emit(ClickMonitor.MQ_NEW_VISITOR, data);
+		}else if(model.visitor != null){
+			model.visitor.isFirst = false;
+		}
+		
+		data.set(ClickMonitor.MQ_SHORT_URL, model);
+		
+		insepctorAccessInfo(model);
+		output.emit(ClickMonitor.MQ_CLICK_LOG, data);
+		if(model.shortKeySource != null && model.shortKeySource.equals("cpc")){
+			output.emit(ClickMonitor.MQ_CPC_LOG, data);					
+		}
+	}
+	
+	//private void process
 
 	private void insepctorAccessInfo(ShortUrlModel model){
 		String agent = model.agent;
