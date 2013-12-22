@@ -18,6 +18,7 @@ import com.taodian.monitor.Settings;
 import com.taodian.monitor.bolt.AbstractClickMonitorBolt;
 import com.taodian.monitor.spout.FileDataSpout;
 import com.taodian.monitor.spout.HTTPURLSpout;
+import com.taodian.monitor.storm.DataQueue;
 import com.taodian.monitor.storm.ItemFactory;
 import com.taodian.monitor.storm.Topology;
 import com.taodian.monitor.storm.TopologyBuilder;
@@ -196,6 +197,16 @@ public class ClickMonitor {
 					fileSpout.wait(1000);
 				} catch (InterruptedException e) {
 				}
+			}
+		}
+		for(DataQueue q : topology.getAllDataQueue()){
+			while(q.status == DataQueue.RUNNING){
+				synchronized(q){
+					try {
+						q.wait(1000);
+					} catch (InterruptedException e) {
+					}
+				}			
 			}
 		}
 	}
