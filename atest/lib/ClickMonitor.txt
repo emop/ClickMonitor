@@ -18,3 +18,9 @@ Process click log
 	Log   ${output}
 	Should be equal as Integers   0   ${rc}
 	
+Get redis data
+    [Arguments]   ${db}   ${key}
+	${rc}   ${output}   Run And Return Rc And Output	${REDIES_CLIENT} -h ${REDIES_HOST} -n ${db} 'get ${key}'
+	[return]  ${output}
+    
+	

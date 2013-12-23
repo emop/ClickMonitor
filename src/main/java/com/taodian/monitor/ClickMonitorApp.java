@@ -35,6 +35,7 @@ public class ClickMonitorApp {
     	updateLog4jLevel("click_monitor");
     	startCleanLog("click_monitor");
     	
+    	
     	Log log = LogFactory.getLog("click.mointor");    	
     	
 		Options options = new Options();

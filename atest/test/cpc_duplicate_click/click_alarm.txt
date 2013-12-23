@@ -15,3 +15,13 @@ ${REDIES_CLIENT}    redis-cli
 	${alarms}   Get File   ${OUTPUT_LOG}
 	Log   ${alarms}
 	Should Contain   ${alarms}   10001 9 连续相同设备
+
+
+按每隔30分钟统计，推广者数据
+	[Documentation]    
+	${OUTPUT_LOG}   Set variable   ${EXECDIR}/alarm.log
+	Process click log   ${CURDIR}/data/access_log.data   ${OUTPUT_LOG}
+	${alarms}   Get File   ${OUTPUT_LOG}
+	Log   ${alarms}
+	Should Contain   ${alarms}   10001 9 连续相同设备
+	

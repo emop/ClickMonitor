@@ -97,7 +97,8 @@ public class ClickMonitor {
 	 */
 	public void setInputFile(String file){
 		fileSpout = new FileDataSpout();
-		fileSpout.load(new File(file));		
+		fileSpout.load(new File(file));	
+
 	}
 
 	/**
@@ -171,6 +172,7 @@ public class ClickMonitor {
 				topology.setSpout(Settings.INPUT_SPOUT, spout);				
 			}
 		}
+		
 		
 		topology.start();		
 	}
