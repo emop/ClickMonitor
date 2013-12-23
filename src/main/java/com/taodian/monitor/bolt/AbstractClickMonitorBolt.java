@@ -22,6 +22,11 @@ public abstract class AbstractClickMonitorBolt implements DataBolt{
 	public void prepare(TopologyContext context) {
 		
 	}
+	
+	@Override	
+	public void shutdown(){
+		
+	}
 
 
 }

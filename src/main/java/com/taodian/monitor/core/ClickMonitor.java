@@ -18,6 +18,7 @@ import com.taodian.monitor.Settings;
 import com.taodian.monitor.bolt.AbstractClickMonitorBolt;
 import com.taodian.monitor.spout.FileDataSpout;
 import com.taodian.monitor.spout.HTTPURLSpout;
+import com.taodian.monitor.storm.DataBolt;
 import com.taodian.monitor.storm.DataQueue;
 import com.taodian.monitor.storm.ItemFactory;
 import com.taodian.monitor.storm.Topology;
@@ -180,6 +181,12 @@ public class ClickMonitor {
 	 * 
 	 */
 	public void shutdown(){
+		for(DataQueue q : topology.getAllDataQueue()){
+			for(DataBolt bolt : q.bolts){
+				bolt.shutdown();
+			}
+		}
+		
 		workPool.shutdownNow();
 	}
 	
