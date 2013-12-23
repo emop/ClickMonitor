@@ -33,6 +33,9 @@ public class BoltWorker implements Runnable {
 						processDataCell(cell);
 					}
 				}while(cell != null);
+				synchronized(queue){
+					queue.notifyAll();
+				}
 			}catch(Throwable e){
 				log.error(e.toString(), e);
 			}finally{

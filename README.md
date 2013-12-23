@@ -5,6 +5,9 @@ ClickMonitor
 
 这只是一个简单的实时消息分析工具。
 
+Redid java client https://github.com/xetorthio/jedis
+
+
 基本结构
 ========
 *  Spout -- 借用Storm的概念，数据输入源。可以是一个文件，HTTP链接，pipline等
@@ -26,6 +29,7 @@ ClickMonitor
 *  click_gate_url -- 配置实时日志流来源，例如: http://c.zaol.cn/log/?token=test&id=1
 *  redis.host -- redis数据库地址，默认:127.0.0.1
 *  save_to_db -- 需要把告警写入到数据库, 默认:n, (y|n)
+*  ignore_alarm_user -- 需要把告警写入短网址跳转网关, 默认:n, (y|n)
 
 使用方式
 =======
@@ -41,13 +45,9 @@ ClickMonitor
 本地编译和运行
 ===========
 
-*  先需要Checkout， https://github.com/alphazero/jredis 编译一个Jar包，然后在编辑
-
 
 ```
-#mvn install:install-file -DgroupId=org.jredis -DartifactId=jredis -Dversion=2.1.0 -Dpackaging=jar -Dfile=libs/jedis-2.1.0.jar -DgeneratePom=true
 
 #mvn assembly:assembly  -- 编译一个完整的Jar包
 ```
 
-我来啦

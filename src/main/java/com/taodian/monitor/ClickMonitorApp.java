@@ -79,8 +79,8 @@ public class ClickMonitorApp {
 		if(cm.isCommandLineMode()){
 			cm.waitAllSpoutDone();
 			cm.shutdown();
-			System.exit(0);
 			log.info("done");
+			System.exit(0);
 		}else {
 			synchronized (ClickMonitorApp.class) {
 				ClickMonitorApp.class.wait();

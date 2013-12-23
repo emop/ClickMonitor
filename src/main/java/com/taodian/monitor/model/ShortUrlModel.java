@@ -131,6 +131,11 @@ public class ShortUrlModel implements Serializable, Cloneable{
 	 */
 	public String mobileLongUrl = null;
 	
+	/**
+	 * 短网址网关对当前点击的出来方式，是拒绝还是，跳转，
+	 */
+	public String action = null;
+	
 	
 	public Date clickTime = new Date(System.currentTimeMillis());
 

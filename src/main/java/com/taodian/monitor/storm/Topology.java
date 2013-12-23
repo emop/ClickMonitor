@@ -1,5 +1,7 @@
 package com.taodian.monitor.storm;
 
+import java.util.List;
+
 
 public interface Topology {
 	
@@ -27,4 +29,6 @@ public interface Topology {
 	 * 开始运行
 	 */
 	public void start();
+	
+	public List<DataQueue> getAllDataQueue();
 }

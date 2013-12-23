@@ -108,6 +108,14 @@ public class DefaultSimpleTopology implements Topology {
 		
 	}
 
+	@Override
+	public List<DataQueue> getAllDataQueue() {
+		List<DataQueue> q = new ArrayList<DataQueue>();
+		q.addAll(queues.values());
+
+		return q;
+	}
+
 	
 	
 }

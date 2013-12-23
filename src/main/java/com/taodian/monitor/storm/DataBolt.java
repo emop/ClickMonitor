@@ -15,5 +15,9 @@ public interface DataBolt {
 	 */
 	public void execute(DataCell data, OutputCollector output);
 
+	/**
+	 * 系统推出时调用。
+	 */
+	public void shutdown();
 
 }

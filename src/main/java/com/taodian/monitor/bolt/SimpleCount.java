@@ -25,5 +25,11 @@ public class SimpleCount implements DataBolt {
 		
 	}
 
+	@Override
+	public void shutdown() {
+		// TODO Auto-generated method stub
+		
+	}
+
 
 }
