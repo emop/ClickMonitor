@@ -45,7 +45,7 @@ public class CPCUserHourAccessMonitor extends BaseClickMonitor{
 		String outKey = "";
 		outKey = String.format("user_%s_%s", obj.userId, day);
 
-		String innerKey = time+"_"+obj.deviceName;
+		String innerKey = "user_"+obj.userId+"_"+time+"_"+obj.deviceName;
 		t.incr(innerKey);
 		
 		t.lpush(outKey, innerKey);
