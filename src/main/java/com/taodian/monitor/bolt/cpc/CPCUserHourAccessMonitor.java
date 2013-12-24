@@ -48,19 +48,11 @@ public class CPCUserHourAccessMonitor extends BaseClickMonitor{
 
 		String innerKey = "user_"+obj.userId+"_"+time+"_"+obj.deviceName;
 		t.incr(innerKey);
-		
-		Response<List<String>> re = t.lrange(outKey, 0, -1);	
+		t.sadd(outKey, innerKey);
+
 //		t.expire(outKey, EXPIRED_TIME);
 //		t.expire(innerKey, EXPIRED_TIME);
 		t.exec(); 
-	
-		List<String> userList = re.get();
-		
-		if(!userList.contains(innerKey)){
-			ds.lpush(outKey, innerKey);
-		}
-
-		
 
 	}
 	
