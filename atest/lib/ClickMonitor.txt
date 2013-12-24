@@ -1,10 +1,11 @@
 *** Settings ***
 Library       OperatingSystem
-Library       RunRedisCommand
+Library       RunRedisCommand    ${REDIES_HOST}   
 
 *** Variables ***
 ${MONITOR_JAR}    ../target/ClickMonitor-1.0-SNAPSHOT.jar
 ${JAVA_CMD}   java
+${REDIES_HOST}   127.0.0.1
 
 			
 *** Keywords ***
