@@ -11,6 +11,7 @@ import redis.clients.jedis.Transaction;
 
 import com.taodian.monitor.bolt.BaseClickMonitor;
 import com.taodian.monitor.bolt.cpc.LastAccessMonitor.ST;
+import com.taodian.monitor.core.DataService;
 import com.taodian.monitor.model.ShortUrlModel;
 import com.taodian.monitor.storm.OutputCollector;
 
@@ -22,7 +23,7 @@ import com.taodian.monitor.storm.OutputCollector;
  */ 
 public class CPCUserHourAccessMonitor extends BaseClickMonitor{
 	
-//	private static int EXPIRED_TIME = 60 * 60 * 24 * 30 * 6;
+	private static int EXPIRED_TIME = 60 * 60 * 24 * 30 * 1;
 
 	@Override
 	protected void check(ShortUrlModel obj, Jedis ds, OutputCollector output) {
@@ -48,13 +49,37 @@ public class CPCUserHourAccessMonitor extends BaseClickMonitor{
 		String innerKey = "user_"+obj.userId+"_"+time+"_"+obj.deviceName;
 		t.incr(innerKey);
 		
-		t.lpush(outKey, innerKey);
-		t.ltrim(outKey, 0, 500);
-		t.exec(); 
+		Response<List<String>> re = t.lrange(outKey, 0, -1);	
 //		t.expire(outKey, EXPIRED_TIME);
+//		t.expire(innerKey, EXPIRED_TIME);
+		t.exec(); 
+	
+		List<String> userList = re.get();
+		
+		if(!userList.contains(innerKey)){
+			ds.lpush(outKey, innerKey);
+		}
 
+		
 
 	}
+	
+	
+//    public void shutdown(){	
+//    	Jedis d = this.dsPool.getJedis(DataService.DS_CPC_MONITOR);
+//    	Transaction t = d.multi();
+//    	
+//    	try{
+//			
+//  
+//		}finally{
+//			if(d != null){
+//				dsPool.releaseConn(d);
+//			}
+//		}
+//    	
+//		
+//	}
 	
 
 
