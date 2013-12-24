@@ -4,11 +4,14 @@
 *.jar
 *.war
 *.ear
+*.pyc
 
 *.log
 
 logs/*.*
 target
+
+.classpath
 
 monitor.conf
 

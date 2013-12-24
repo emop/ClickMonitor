@@ -1,0 +1,16 @@
+*** Settings ***
+Resource    ClickMonitor.txt
+Test setup   Cleanup all alarm data
+
+*** Variables ***
+${MONITOR_JAR}    ../target/ClickMonitor-1.0-SNAPSHOT.jar
+${REDIES_CLIENT}    redis-cli
+
+*** Test Cases ***
+
+某个用间每半小时的单击统计
+    [Documentation]
+    ${OUTPUT_LOG}   Set variable   ${EXECDIR}/alarm.log
+    Process click log   ${CURDIR}/data/timeshare_access_log.data   ${OUTPUT_LOG}
+    ${click_list}   Get redis data   1312230000_iPhone    2
+    Should be equal   ${click_list}   1
