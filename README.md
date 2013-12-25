@@ -51,3 +51,11 @@ Redid java client https://github.com/xetorthio/jedis
 #mvn assembly:assembly  -- 编译一个完整的Jar包
 ```
 
+本地数据测试
+==========
+1. 准备数据 放入data目录
+2. 运行
+
+    运行jar包，并传入一个文件 java -jar libs\MockTaodianApi-0.0.1.jar -short_data short_url_info.data
+    
+
