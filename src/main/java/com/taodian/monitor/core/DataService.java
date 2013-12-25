@@ -127,6 +127,7 @@ public class DataService {
 		String data = "%s$%s$%s$%s$%s$%s";
 		data = String.format(data, v.uid, v.isMobile, v.ip, v.host, timeFormate.format(v.created), v.agent);		
 		j.set("user_" + v.uid, data);
+		j.expire("user_" + v.uid, 60 * 60 * 24 * 30);
 		
 		releaseConn(j);
 	}
