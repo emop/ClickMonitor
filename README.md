@@ -53,9 +53,9 @@ Redid java client https://github.com/xetorthio/jedis
 
 本地数据测试
 ==========
-1. 准备数据 放入data目录
+1. 准备数据 
 2. 运行 [MockTaodianApi][refer-mockTaodianApi]
 
-        运行jar包，并传入一个文件 java -jar libs\MockTaodianApi-0.0.1.jar -short_data short_url_info.data
+        运行jar包，并传入一个文件 java -jar libs\MockTaodianApi-0.0.1.jar -short_data data/short_url_info.data
     
 [refer-mockTaodianApi]: https://github.com/wisarmy/mockTaodianApi
