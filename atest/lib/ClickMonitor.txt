@@ -18,6 +18,12 @@ Process click log
 	Log   ${output}
 	Should be equal as Integers   0   ${rc}
 	
+run ClickMoniter by log
+    [Arguments]   ${click_log}
+    ${rc}   ${output}   Run And Return Rc And Output	${JAVA_CMD} -jar ${MONITOR_JAR} -file ${click_log}
+	Log   ${output}
+	Should be equal as Integers   0   ${rc}
+	
 Get redis data
     [Arguments]    ${key}    ${db}
 	${output}   get_data	${key}    ${db}

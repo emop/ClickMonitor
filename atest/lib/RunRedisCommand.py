@@ -12,6 +12,12 @@ class RunRedisCommand:
 		val = f.get(key)
 		return val
 
+	def run_redis_command(self, command, keys, db=0):
+		f = self._get_con(db)
+
+		str = "f.%s($s)" %(command, keys)
+		return eval(str)
+	
 	def cleanup_db_data(self, db=0):
 		f = self._get_con(db)
 		f.flushdb()

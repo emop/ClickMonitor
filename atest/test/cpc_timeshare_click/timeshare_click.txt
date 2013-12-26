@@ -7,10 +7,32 @@ ${MONITOR_JAR}    ../target/ClickMonitor-1.0-SNAPSHOT.jar
 ${REDIES_CLIENT}    redis-cli
 
 *** Test Cases ***
-
-某个用间每半小时的单击统计
+    
+检查对iPhone点击的统计是否正确
     [Documentation]
-    ${OUTPUT_LOG}   Set variable   ${EXECDIR}/alarm.log
-    Process click log   ${CURDIR}/data/timeshare_access_log.data   ${OUTPUT_LOG}
-    ${click_list}   Get redis data   user_74_1312230000_iPhone    2
-    Should be equal   ${click_list}   1
+    run ClickMoniter by log   ${CURDIR}/data/timeshare_access_log.data
+    ${click_data}   Get redis data   user_74_1312230000_iPhone    2
+    Log   ${click_data}
+    Should be equal   ${click_data}   1
+    
+检查对Android点击的统计是否正确
+    [Documentation]
+    run ClickMoniter by log   ${CURDIR}/data/timeshare_access_log.data
+    ${click_data}   Get redis data   user_74_1312230000_Android    2
+    Log   ${click_data}
+    Should be equal   ${click_data}   4
+    
+检查对OtherMobile点击的统计是否正确
+    [Documentation]
+    run ClickMoniter by log   ${CURDIR}/data/timeshare_access_log.data
+    ${click_data}   Get redis data    user_74_1312230000_OtherMobile    2
+    Log    ${click_data}
+    Should be equal    ${click_data}    2
+    
+检查对PC的点击统计是否正确
+    [Documentation]
+    run ClickMoniter by log   ${CURDIR}/data/timeshare_access_log.data
+    ${click_data}   Get redis data   user_74_1312230000_PC    2
+    Log    ${click_data}
+    Should be equal   ${click_data}   3
+    
