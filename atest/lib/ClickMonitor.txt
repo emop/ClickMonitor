@@ -11,6 +11,7 @@ ${REDIES_HOST}   127.0.0.1
 ${MOCK_API}    ../libs/MockTaodianApi-0.0.1.jar
 ${SHORT_DATA}    ../data/short_url_info.data
 ${mock_log}   mock_api.log
+${is_win}    sys.platform.startswith('win')
 			
 *** Keywords ***
 Cleanup all alarm data
@@ -22,7 +23,7 @@ run MockTaodianApi
     Process Should Be Running   ${api_pid}
     
 stop MockTaodianApi
-	Run keyword if   "\\${/}"=="\\\\"   call_taodian_api   sys_exit
+	Run keyword if   ${is_win}   call_taodian_api   sys_exit
     Process.Terminate Process   ${api_pid}   kill=True
     Process Should Be Stopped   ${api_pid}
     
