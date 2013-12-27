@@ -13,7 +13,6 @@ ${SHORT_DATA}    ../data/short_url_info.data
 *** Keywords ***
 Cleanup all alarm data
 	cleanup_db_data_all
-	run MockTaodianApi
 	
 run MockTaodianApi
     Start Process    ${JAVA_CMD} -jar ${MOCK_API} -short_data ${SHORT_DATA}
