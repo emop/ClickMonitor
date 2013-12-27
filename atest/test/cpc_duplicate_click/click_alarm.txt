@@ -1,6 +1,8 @@
 *** Settings ***
 Resource    ClickMonitor.txt
+Suite Setup    run MockTaodianApi
 Test setup   Cleanup all alarm data
+Suite Teardown   stop MockTaodianApi
 
 *** Variables ***
 ${MONITOR_JAR}    ../target/ClickMonitor-1.0-SNAPSHOT.jar
