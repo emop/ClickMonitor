@@ -1,0 +1,38 @@
+*** Settings ***
+Resource    ClickMonitor.txt
+Test setup   Cleanup all alarm data
+
+
+*** Variables ***
+${MONITOR_JAR}    ../target/ClickMonitor-1.0-SNAPSHOT.jar
+${REDIES_CLIENT}    redis-cli
+
+*** Test Cases ***
+    
+测试对推广者ID为74的短地址，在13年12月25日13点30分到14点整时段产生的iPhone点击量的统计。
+    [Documentation]
+    run ClickMoniter by log   ${CURDIR}/data/74_131225_iPhone_click.data
+    ${click_data}   Get redis data   user_74_1312251330_iPhone    2
+    Log   ${click_data}
+    Should be equal   ${click_data}   3
+
+测试对推广者ID为74的短地址，在13年12月25日13点30分到14点整时段产生的Android点击量的统计。
+    [Documentation]
+    run ClickMoniter by log   ${CURDIR}/data/74_131225_Android_click.data
+    ${click_data}   Get redis data   user_74_1312251330_Android    2
+    Log   ${click_data}
+    Should be equal   ${click_data}   4
+
+测试对推广者ID为74的短地址，在13年12月25日13点30分到14点整时段产生的OtherMobile点击量的统计。
+    [Documentation]
+    run ClickMoniter by log   ${CURDIR}/data/74_131225_OtherMobile_click.data
+    ${click_data}   Get redis data   user_74_1312251330_OtherMobile    2
+    Log   ${click_data}
+    Should be equal   ${click_data}   4
+
+测试对推广者ID为74的短地址，在13年12月25日13点30分到14点整时段产生的PC点击量的统计。
+    [Documentation]
+    run ClickMoniter by log   ${CURDIR}/data/74_131225_PC_click.data
+    ${click_data}   Get redis data   user_74_1312251330_PC    2
+    Log   ${click_data}
+    Should be equal   ${click_data}   4

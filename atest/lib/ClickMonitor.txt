@@ -6,11 +6,17 @@ Library       RunRedisCommand    ${REDIES_HOST}
 ${MONITOR_JAR}    ../target/ClickMonitor-1.0-SNAPSHOT.jar
 ${JAVA_CMD}   java
 ${REDIES_HOST}   127.0.0.1
+${MOCK_API}    ../libs/MockTaodianApi-0.0.1.jar
+${SHORT_DATA}    ../data/short_url_info.data
 
 			
 *** Keywords ***
 Cleanup all alarm data
-	cleanup db data    2
+	cleanup_db_data_all
+	run MockTaodianApi
+	
+run MockTaodianApi
+    Start Process    ${JAVA_CMD} -jar ${MOCK_API} -short_data ${SHORT_DATA}
 
 Process click log
 	[Arguments]   ${click_log}   ${alarm_log}

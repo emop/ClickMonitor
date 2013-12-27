@@ -22,6 +22,9 @@ class RunRedisCommand:
 		f = self._get_con(db)
 		f.flushdb()
 		
+	def cleanup_db_data_all(self):
+		f = self._get_con(0)
+		f.flushall()
 	
 	def _get_con(self, db):
 		db = int(db)
