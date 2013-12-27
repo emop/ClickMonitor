@@ -23,10 +23,13 @@ run MockTaodianApi
     Process Should Be Running   ${api_pid}
     
 stop MockTaodianApi
-	Run keyword if   ${is_win}   call_taodian_api   sys_exit
+	Run keyword if   ${is_win}   shutdown mock api on windows
     Process.Terminate Process   ${api_pid}   kill=True
     Process Should Be Stopped   ${api_pid}
     
+shutdown mock api on windows   
+	call_taodian_api   sys_exit
+    sleep   1
 
 Process click log
 	[Arguments]   ${click_log}   ${alarm_log}
