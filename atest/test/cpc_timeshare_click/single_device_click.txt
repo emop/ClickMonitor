@@ -2,6 +2,7 @@
 Resource    ClickMonitor.txt
 Suite Setup    run MockTaodianApi
 Test setup   Cleanup all alarm data
+Suite Teardown   stop MockTaodianApi
 
 
 *** Variables ***

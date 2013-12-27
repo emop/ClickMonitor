@@ -1,4 +1,5 @@
 *** Settings ***
+Library       Process
 Library       OperatingSystem
 Library       RunRedisCommand    ${REDIES_HOST}   
 
@@ -8,14 +9,21 @@ ${JAVA_CMD}   java
 ${REDIES_HOST}   127.0.0.1
 ${MOCK_API}    ../libs/MockTaodianApi-0.0.1.jar
 ${SHORT_DATA}    ../data/short_url_info.data
-
+${mock_log}   mock_api.log
 			
 *** Keywords ***
 Cleanup all alarm data
 	cleanup_db_data_all
 	
 run MockTaodianApi
-    Start Process    ${JAVA_CMD} -jar ${MOCK_API} -short_data ${SHORT_DATA}
+    ${api_pid}   Process.Start Process    ${JAVA_CMD} -jar ${MOCK_API} -short_data ${SHORT_DATA}   shell=True   stdout=${mock_log}   stderr=${mock_log}
+    Set suite variable   ${api_pid}
+    Process Should Be Running   ${api_pid}
+    
+stop MockTaodianApi
+    Process.Terminate Process   ${api_pid}   kill=True
+    Process Should Be Stopped   ${api_pid}
+    
 
 Process click log
 	[Arguments]   ${click_log}   ${alarm_log}
