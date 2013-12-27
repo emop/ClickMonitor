@@ -1,7 +1,8 @@
 *** Settings ***
 Library       Process
 Library       OperatingSystem
-Library       RunRedisCommand    ${REDIES_HOST}   
+Library       RunRedisCommand    ${REDIES_HOST}  
+Library       Taodian   4   x   http://localhost:8090/api/route
 
 *** Variables ***
 ${MONITOR_JAR}    ../target/ClickMonitor-1.0-SNAPSHOT.jar
@@ -21,6 +22,7 @@ run MockTaodianApi
     Process Should Be Running   ${api_pid}
     
 stop MockTaodianApi
+	Run keyword if   "\\${/}"=="\\\\"   call_taodian_api   sys_exit
     Process.Terminate Process   ${api_pid}   kill=True
     Process Should Be Stopped   ${api_pid}
     
