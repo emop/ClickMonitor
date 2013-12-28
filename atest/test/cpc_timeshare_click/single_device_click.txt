@@ -47,7 +47,6 @@ ${REDIES_CLIENT}    redis-cli
     :FOR	${index}	IN   @{click_data}
     \    ${r}  Get redis data   ${index}  2
 	\    ${count}=   Set Variable If   '${index}'.endswith('iPhone')   ${count}+${r}
-	${count}   Evaluate  ${count} 
-	${count}    Convert To String  ${count} 
+	${count}   Evaluate  ${count}  
 	log   ${count}
-	Should be equal   ${count}   4
+	Should be equal as integers   ${count}   4
