@@ -25,7 +25,7 @@ run MockTaodianApi
 stop MockTaodianApi
 	Run keyword if   ${is_win}   shutdown mock api on windows
     Process.Terminate Process   ${api_pid}   kill=True
-    Process Should Be Stopped   ${api_pid}
+    Wait Until Keyword Succeeds   5s   1s   Process Should Be Stopped   ${api_pid}
     
 shutdown mock api on windows   
 	call_taodian_api   sys_exit
