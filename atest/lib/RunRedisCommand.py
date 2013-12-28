@@ -11,6 +11,11 @@ class RunRedisCommand:
 		f = self._get_con(db)
 		val = f.get(key)
 		return val
+		
+	def get_sets(self, key, db=0):
+		f = self._get_con(db)
+		set = f.smembers(key)
+		return set
 
 	def run_redis_command(self, command, keys, db=0):
 		f = self._get_con(db)

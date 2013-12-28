@@ -38,3 +38,16 @@ ${REDIES_CLIENT}    redis-cli
     ${click_data}   Get redis data   user_74_1312251330_PC    2
     Log   ${click_data}
     Should be equal   ${click_data}   4
+    
+ 测试对推广者ID为74的短地址，在13年12月25日iPhone点击总数的统计
+    [Documentation]
+    run ClickMoniter by log   ${CURDIR}/data/74_131225_iPhone_click.data
+    @{click_data}   Get redis data   user_74_131225    2	
+	${count}  Set variable   0
+    :FOR	${index}	IN   @{click_data}
+    \    ${r}  Get redis string   ${index}  2
+	\    ${count}=   Set Variable If   '${index}'.endswith('iPhone')   ${count}+${r}
+	${count}   Evaluate  ${count} 
+	${count}    Convert To String  ${count} 
+	log   ${count}
+	Should be equal   ${count}   4

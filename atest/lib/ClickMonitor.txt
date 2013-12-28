@@ -48,4 +48,10 @@ Get redis data
 	${output}   get_data	${key}    ${db}
 	
 	[return]  ${output}
+	
+Get redis set
+    [Arguments]    ${key}    ${db}
+	${output}   get_sets	${key}    ${db}
+	
+	[return]  ${output}
     
