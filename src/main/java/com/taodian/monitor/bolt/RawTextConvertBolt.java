@@ -40,6 +40,7 @@ public class RawTextConvertBolt extends AbstractClickMonitorBolt {
 			if(tmp.length > 5){
 				ShortUrlModel model = dsPool.getShortUrl(tmp[2]);
 				if(model != null){
+					model = model.copy();
 					switch(tmp.length){
 						case 8: model.refer = tmp[7];
 						case 7: model.agent = tmp[6];
@@ -64,6 +65,7 @@ public class RawTextConvertBolt extends AbstractClickMonitorBolt {
 			if(ma != null && ma.find()){
 				ShortUrlModel model = dsPool.getShortUrl(ma.group(2));
 				if(model != null){
+					model = model.copy();
 					model.shortKey = ma.group(2);
 					model.uid = ma.group(3);
 					model.ip = ma.group(4);
