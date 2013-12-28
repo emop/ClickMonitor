@@ -3,7 +3,7 @@ Resource    ClickMonitor.txt
 Suite Setup    run MockTaodianApi
 Test setup   Cleanup all alarm data
 Suite Teardown   stop MockTaodianApi
-
+Force Tags   onwer-wdx  feature-cpc  test-function
 
 *** Variables ***
 ${MONITOR_JAR}    ../target/ClickMonitor-1.0-SNAPSHOT.jar

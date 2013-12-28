@@ -23,3 +23,9 @@ atest/report.html
 
 
 bin/
+
+atest/log/log.html
+
+atest/log/output.xml
+
+atest/log/report.html
