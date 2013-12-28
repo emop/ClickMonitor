@@ -1,0 +1,25 @@
+*** Settings ***
+Resource    ClickMonitor.txt
+Suite Setup    run MockTaodianApi
+Test setup   Cleanup all alarm data
+Suite Teardown   stop MockTaodianApi
+
+
+*** Variables ***
+${MONITOR_JAR}    ../target/ClickMonitor-1.0-SNAPSHOT.jar
+${REDIES_CLIENT}    redis-cli
+
+*** Test Cases ***
+
+测试对推广者ID为74,点击时间13－12－25 16：00至13－12－15 16：30的短网址741i02白点击
+    [Documentation]
+    run ClickMoniter by log   ${CURDIR}/data/74IP02_click.data
+    
+    ${click_data}   Get redis data   user_74_1312251600_iPhone    2
+    Log   ${click_data}
+    Should be equal   ${click_data}   6
+	
+    ${click_data}   Get redis data   user_74_1312251600_Android    2
+    Log   ${click_data}
+    Should be equal   ${click_data}   2
+    
