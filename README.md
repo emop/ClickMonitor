@@ -8,6 +8,9 @@ ClickMonitor
 Redid java client https://github.com/xetorthio/jedis
 
 
+开发者交流， QQ群:63168115
+
+
 基本结构
 ========
 *  Spout -- 借用Storm的概念，数据输入源。可以是一个文件，HTTP链接，pipline等
