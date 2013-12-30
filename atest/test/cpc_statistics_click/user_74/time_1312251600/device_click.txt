@@ -1,0 +1,52 @@
+*** Settings ***
+Resource    ClickMonitor.txt
+Suite Setup    run MockTaodianApi
+Test setup   Cleanup all alarm data
+Suite Teardown   stop MockTaodianApi
+Force Tags   onwer-wdx  feature-cpc  test-function
+
+*** Variables ***
+${MONITOR_JAR}    ../target/ClickMonitor-1.0-SNAPSHOT.jar
+${REDIES_CLIENT}    redis-cli
+
+*** Test Cases ***
+    
+测试对推广者ID为74的短地址，点击时间13－12－25 16：00至13－12－15 16：30时段产生的iPhone点击量的统计。
+    [Documentation]
+    run ClickMoniter by log   ${CURDIR}/data/iPhone_click.data
+    ${click_data}   Get redis data   user_74_1312251600_iPhone    2
+    Log   ${click_data}
+    Should be equal   ${click_data}   4
+
+测试对推广者ID为74的短地址，点击时间13－12－25 16：00至13－12－15 16：30时段产生的Android点击量的统计。
+    [Documentation]
+    run ClickMoniter by log   ${CURDIR}/data/Android_click.data
+    ${click_data}   Get redis data   user_74_1312251600_Android    2
+    Log   ${click_data}
+    Should be equal   ${click_data}   4
+
+测试对推广者ID为74的短地址，点击时间13－12－25 16：00至13－12－15 16：30时段产生的OtherMobile点击量的统计。
+    [Documentation]
+    run ClickMoniter by log   ${CURDIR}/data/OtherMobile_click.data
+    ${click_data}   Get redis data   user_74_1312251600_OtherMobile    2
+    Log   ${click_data}
+    Should be equal   ${click_data}   4
+
+测试对推广者ID为74的短地址，点击时间13－12－25 16：00至13－12－15 16：30时段产生的PC点击量的统计。
+    [Documentation]
+    run ClickMoniter by log   ${CURDIR}/data/PC_click.data
+    ${click_data}   Get redis data   user_74_1312251600_PC    2
+    Log   ${click_data}
+    Should be equal   ${click_data}   4
+    
+ 测试对推广者ID为74的短地址，在13年12月25日iPhone点击总数的统计
+    [Documentation]
+    run ClickMoniter by log   ${CURDIR}/data/iPhone_click.data
+    @{click_data}   Get redis set   user_74_131225    2	
+	${count}  Set variable   0
+    :FOR	${index}	IN   @{click_data}
+    \    ${r}  Get redis data   ${index}  2
+	\    ${count}=   Set Variable If   '${index}'.endswith('iPhone')   ${count}+${r}
+	${count}   Evaluate  ${count}  
+	log   ${count}
+	Should be equal as integers   ${count}   4
