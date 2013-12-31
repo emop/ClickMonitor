@@ -55,7 +55,11 @@ public class DataService {
 		this.api = api;
 		
 		String host = Settings.getString("redis.host", "127.0.0.1");
-		connPool = new JedisPool(new JedisPoolConfig(), host);
+		JedisPoolConfig cfg = new JedisPoolConfig();
+		cfg.setMaxWait(1000);
+		cfg.setMaxIdle(20);
+		cfg.setMaxActive(100);
+		connPool = new JedisPool(cfg, host);
 		Jedis c = getJedis();
 		String p = c.ping();
 		releaseConn(c);
