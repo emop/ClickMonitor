@@ -54,4 +54,15 @@ Get redis set
 	${output}   get_sets	${key}    ${db}
 	
 	[return]  ${output}
+	
+Get day device click
+    [Arguments]    ${db}     ${decive}    @{data}
+    ${count}  Set variable   0
+    :FOR	${index}	IN   @{data}
+    \    ${r}   Get redis data   ${index}   ${db}
+	\    ${count}=   Set Variable If   '${index}'.endswith('${decive}')   ${count}+${r}
+	${count}   Evaluate  ${count}
+	
+	[return]  ${count}  
+    
     
