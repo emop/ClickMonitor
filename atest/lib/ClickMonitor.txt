@@ -64,5 +64,16 @@ Get day device click
 	${count}   Evaluate  ${count}
 	
 	[return]  ${count}  
+	
+Get day total click
+    [Arguments]    ${db}    @{data}
+    ${count}  Set variable   0
+    :FOR	${index}	IN   @{data}
+    \    ${r}   Get redis data   ${index}   ${db}
+	\    ${count}=   Set Variable If   ${r}>0   ${count}+${r}
+	${count}   Evaluate  ${count}
+	
+	[return]  ${count}  
+	
     
     
