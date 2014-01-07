@@ -4,10 +4,22 @@ Suite Setup   run MockTaodianApi
 Suite Teardown   stop MockTaodianApi
 Test Setup   Cleanup all alarm data
 
+Documentation
+...  1.测试范围：一天内的点击
+...  2.测试目的： 点击数统计是否正确
+...  3.特殊说明：data数据文件命名对照表
+...          'Y' 相同
+...          'N' 不同
+...          'S' 短网址
+...          'I' ip
+...          'U' 访问者id
+...          'D' 设备
+...  
+...
 *** Variables ***
 ${MONITOR_JAR}   ../target/ClickMonitor-1.0-SNAPSHOT.jar
 ${REDIES_CLIENT}   redis-cli
-
+${db}   2
 
 *** TestCases ***
 
@@ -15,10 +27,47 @@ ${REDIES_CLIENT}   redis-cli
 测试某天所有点击 == 以半个小时为单位的点击数总和
 	[Documentation]
 	run ClickMoniter by log   ${CURDIR}/data/short_keys_click.data
-	@{click_data}   Get redis set   user_all_140101   2
+	@{click_data}   Get redis set   user_all_140101   ${db}
 	${count}   Set Variable   0
 	:FOR   ${index}   IN   @{click_data}
-	\   ${r}   Get redis data   ${index}   2
+	\   ${r}   Get redis data   ${index}   ${db}
 	\   ${count} =   Set Variable If   ${r}>0   ${count}+${r}
 	\   ${count} =   Evaluate   ${count}
 	Should Be Equal As Strings   ${count}   25
+		
+测试某天 某个单位时间段的点击数是否正常
+	[Documentation]   测试时间段 2014010100
+	${test_status}   Set variable   ok
+	${except1}   Set variable   3
+	${except2}   Set variable   2
+
+	run ClickMoniter by log   ${CURDIR}/data/short_keys_time_snnipet.data
+	${count1}   Get redis data   user_all_1401010000   ${db}
+	${count2}   Get redis data   user_all_1401010030   ${db}
+	${test_status}=   Set Variable If   ${count1} != ${except1}   err   ok
+	${test_status}=   Set Variable If   ${count2} != ${except2}   err   ok
+	Should Be Equal   ${test_status}   ok
+	
+测试某天所有点击 == 以半个小时为单位的点击数总和 && ip相同 &&访问者id相同 && 设备相同 && 短网址相同
+测试某天所有点击 == 以半个小时为单位的点击数总和 && ip相同 &&访问者id不同 && 设备相同 && 短网址相同
+测试某天所有点击 == 以半个小时为单位的点击数总和 && ip相同 &&访问者id相同 && 设备不同 && 短网址相同
+测试某天所有点击 == 以半个小时为单位的点击数总和 && ip相同 &&访问者id不同 && 设备不同 && 短网址相同
+测试某天所有点击 == 以半个小时为单位的点击数总和 && ip不同 &&访问者id相同 && 设备相同 && 短网址相同
+测试某天所有点击 == 以半个小时为单位的点击数总和 && ip不同 &&访问者id不同 && 设备相同 && 短网址相同
+测试某天所有点击 == 以半个小时为单位的点击数总和 && ip不同 &&访问者id相同 && 设备不同 && 短网址相同
+测试某天所有点击 == 以半个小时为单位的点击数总和 && ip不同 &&访问者id不同 && 设备不同 && 短网址相同
+
+测试某天所有点击 == 以半个小时为单位的点击数总和 && ip相同 &&访问者id相同 && 设备相同 && 短网址不同
+测试某天所有点击 == 以半个小时为单位的点击数总和 && ip相同 &&访问者id不同 && 设备相同 && 短网址不同
+测试某天所有点击 == 以半个小时为单位的点击数总和 && ip相同 &&访问者id相同 && 设备不同 && 短网址不同
+测试某天所有点击 == 以半个小时为单位的点击数总和 && ip相同 &&访问者id不同 && 设备不同 && 短网址不同
+测试某天所有点击 == 以半个小时为单位的点击数总和 && ip不同 &&访问者id相同 && 设备相同 && 短网址不同
+测试某天所有点击 == 以半个小时为单位的点击数总和 && ip不同 &&访问者id不同 && 设备相同 && 短网址不同
+测试某天所有点击 == 以半个小时为单位的点击数总和 && ip不同 &&访问者id相同 && 设备不同 && 短网址不同
+测试某天所有点击 == 以半个小时为单位的点击数总和 && ip不同 &&访问者id不同 && 设备不同 && 短网址不同
+
+
+
+	   
+
+
