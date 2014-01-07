@@ -1,0 +1,24 @@
+*** Settings ***
+Resource   ClickMonitor.txt
+Suite Setup   run MockTaodianApi
+Suite Teardown   stop MockTaodianApi
+Test Setup   Cleanup all alarm data
+
+*** Variables ***
+${MONITOR_JAR}   ../target/ClickMonitor-1.0-SNAPSHOT.jar
+${REDIES_CLIENT}   redis-cli
+
+
+*** TestCases ***
+
+
+测试某天所有点击 == 以半个小时为单位的点击数总和
+	[Documentation]
+	run ClickMoniter by log   ${CURDIR}/data/short_keys_click.data
+	@{click_data}   Get redis set   user_all_140101   2
+	${count}   Set Variable   0
+	:FOR   ${index}   IN   @{click_data}
+	\   ${r}   Get redis data   ${index}   2
+	\   ${count} =   Set Variable If   ${r}>0   ${count}+${r}
+	\   ${count} =   Evaluate   ${count}
+	Should Be Equal As Strings   ${count}   25
