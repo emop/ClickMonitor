@@ -17,12 +17,16 @@ public abstract class BaseClickMonitor extends AbstractClickMonitorBolt {
 		
 		ShortUrlModel obj = (ShortUrlModel)m;
 		Jedis d = this.dsPool.getJedis(DataService.DS_CPC_MONITOR);
-		try{
-			check(obj, d, output);
-		}finally{
-			if(d != null){
-				dsPool.releaseConn(d);
+		if(d != null){ 
+			try{
+				check(obj, d, output);
+			}finally{
+				if(d != null){
+					dsPool.releaseConn(d);
+				}
 			}
+		}else {
+			log.error("Failed to get DB connection,");
 		}
 	}
 	

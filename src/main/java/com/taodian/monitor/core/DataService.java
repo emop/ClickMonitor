@@ -48,22 +48,15 @@ public class DataService {
 	private CacheApi cache = new SimpleCacheApi();
 	public CopyOnWriteArraySet<String> pendingShortKey = new CopyOnWriteArraySet<String>();
 	public BlockingQueue<Runnable> pendingShortQueue = null;
+	private long lastRedisConnectTime = 0;
 	
 	public boolean start(ThreadPoolExecutor executor, TaodianApi api){
 		this.executor = executor;
 		pendingShortQueue = executor.getQueue();
 		this.api = api;
 		
-		String host = Settings.getString("redis.host", "127.0.0.1");
-		JedisPoolConfig cfg = new JedisPoolConfig();
-		cfg.setMaxWait(1000);
-		cfg.setMaxIdle(20);
-		cfg.setMaxActive(100);
-		connPool = new JedisPool(cfg, host);
-		Jedis c = getJedis();
-		String p = c.ping();
-		releaseConn(c);
-		return p != null && p.equals("PONG");
+		reConnect();
+		return connPool != null;
 	}
 	
 	public ShortUrlModel getShortUrl(String key){
@@ -71,13 +64,57 @@ public class DataService {
 	}
 	
 	public Jedis getJedis(){
-		return connPool.getResource();
+		return getJedis(1);
 	}
 	
-	public Jedis getJedis(int db){
-		Jedis d = connPool.getResource();
-		d.select(db);
-		return d;
+	public Jedis getJedis(int db){		
+		Jedis j = null;
+		if(connPool == null){
+			reConnect();	
+		}
+		
+		if(connPool != null){
+			try{
+				j = connPool.getResource();
+				j.select(db);
+			}catch(Exception e){
+				log.warn("Failed to get redis connection:" + e.toString(), e);
+				connPool.destroy();
+				connPool = null;
+			}
+		}
+				
+		return j;
+	}
+	
+	protected void reConnect(){
+		if(System.currentTimeMillis() - this.lastRedisConnectTime < 60 * 1000){
+			return;
+		}
+		lastRedisConnectTime = System.currentTimeMillis();
+		
+		String r = null;
+		String host = null;
+		try{
+			host = Settings.getString("redis.host", "127.0.0.1");
+			JedisPoolConfig cfg = new JedisPoolConfig();
+			cfg.setMaxWait(1000);
+			cfg.setMaxIdle(20);
+			cfg.setMaxActive(100);
+			connPool = new JedisPool(cfg, host);
+			Jedis c = connPool.getResource();
+			r = c.ping();
+			connPool.returnResource(c);
+		}catch(Exception e){
+			log.warn("Failed to init redis dababase, msg:" + e.toString());
+		}
+		
+		if(r == null || !r.equals("PONG")){
+			connPool = null;
+			log.info("The redis database is disabled.");
+		}else {
+			log.info("Connect to redis ok, host:" + host);			
+		}
 	}	
 	
 	public void releaseConn(Jedis jedis){

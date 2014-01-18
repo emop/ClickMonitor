@@ -18,11 +18,13 @@ public abstract class UserBaseBlot extends AbstractClickMonitorBolt {
 		
 		ShortUrlModel obj = (ShortUrlModel)m;
 		Jedis d = this.dsPool.getJedis(DataService.DS_USER_LOG);
-		try{
-			check(obj, d, output);
-		}finally{
-			if(d != null){
-				dsPool.releaseConn(d);
+		if(d != null){
+			try{
+				check(obj, d, output);
+			}finally{
+				if(d != null){
+					dsPool.releaseConn(d);
+				}
 			}
 		}
 	}
